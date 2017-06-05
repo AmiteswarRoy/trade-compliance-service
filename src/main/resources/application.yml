@@ -1,0 +1,24 @@
+server:
+  compression:
+    enabled: true
+    mime-types: application/json,text/html,text/plain
+    min-response-size: 40
+  jetty:
+    acceptors: 2
+  port: 9900
+elasticsearch:
+  serverUri: "http://localhost:9300"
+  connectTimeOut: 30000
+  readTimeOut: 30000
+  index: "file"
+  clusterName: "compliance"
+  fileType: "file"
+  groupIndex: "sawgds-box-files-qa-v4"
+  groupType: "groups_v1"
+  maxResultsToFetch: 2000
+  onInsertReplaceExisting: true
+  scrollSize: 2
+  scrollTime: 1m
+  
+
+

@@ -1,0 +1,82 @@
+Configuration:
+  name: Default
+
+  Properties:
+    Property:
+      name: log-path
+      value: "/logs/tradeSearch"
+
+  Appenders:
+
+    Console:
+      name: Console_Appender
+      target: SYSTEM_OUT
+      PatternLayout:
+        pattern: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
+
+    RollingFile:
+      - name: LogFile_Appender
+        fileName: ${log-path}/search.log
+        filePattern: ${log-path}/archive/search.log.%d{yyyy-MM-dd-hh-mm}.gz
+        PatternLayout:
+          pattern: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
+        Policies:
+          SizeBasedTriggeringPolicy:
+            size: 30 MB
+        DefaultRollOverStrategy:
+          max: 30
+      - name: ErrorFile_Appender
+        fileName: ${log-path}/search-error.log
+        filePattern: ${log-path}/archive/search-error.log.%d{yyyy-MM-dd-hh-mm}.gz
+        PatternLayout:
+          pattern: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
+        Policies:
+          SizeBasedTriggeringPolicy:
+            size: 5 MB
+        DefaultRollOverStrategy:
+          max: 30
+      - name: InstrumentationFile_Appender
+        fileName: ${log-path}/search-instrumentation.log
+        filePattern: ${log-path}/archive/search-instrumentation.log.%d{yyyy-MM-dd-hh-mm}.gz
+        PatternLayout:
+          pattern: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
+        Policies:
+          SizeBasedTriggeringPolicy:
+            size: 1 MB
+        DefaultRollOverStrategy:
+          max: 30
+
+  Loggers:
+
+      Root:
+        level: debug
+        AppenderRef:
+          - ref: Console_Appender
+
+      Logger:
+        - name: com.dowjones.rs.search
+          additivity: true
+          level: debug
+          AppenderRef:
+            - ref: Console_Appender
+              level: info
+            - ref: LogFile_Appender
+              level: debug
+            - ref: ErrorFile_Appender
+              level: error
+        - name: org.ieee.wgds.common
+          additivity: true
+          level: debug
+          AppenderRef:
+            - ref: Console_Appender
+              level: info
+            - ref: LogFile_Appender
+              level: info
+            - ref: ErrorFile_Appender
+              level: error
+        - name: org.ieee.wgds.common.aop.InstrumentationAspect
+          additivity: true
+          level: info
+          AppenderRef:
+            - ref: InstrumentationFile_Appender
+              level: info
