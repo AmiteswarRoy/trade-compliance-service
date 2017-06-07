@@ -4,13 +4,13 @@
 	
 	<modelVersion>4.0.0</modelVersion>
 	
-	<groupId>com.dowjones.rs.search</groupId>
-	<artifactId>elasticSearchEngine</artifactId>
+	<groupId>com.dowjones.tradecompliance.search</groupId>
+	<artifactId>trade-compliance-search</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	
-	<name>riskcompliancesearch</name>
-	<description>Risk Compliance Search</description>
+	<name>tradecompliancesearch</name>
+	<description>Trade Compliance Search</description>
 	
 	<parent>
 		<groupId>org.springframework.boot</groupId>
