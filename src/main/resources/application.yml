@@ -7,14 +7,12 @@ server:
     acceptors: 2
   port: 9900
 elasticsearch:
-  serverUri: "http://localhost:9300"
-  connectTimeOut: 30000
-  readTimeOut: 30000
-  index: "file"
+  serverUri: "http://localhost:9200"
+  connectTimeOut: 90000
+  readTimeOut: 90000
+  index: "compliancesearch"
   clusterName: "compliance"
-  fileType: "file"
-  groupIndex: "sawgds-box-files-qa-v4"
-  groupType: "groups_v1"
+  fileType: "files_v1"
   maxResultsToFetch: 2000
   onInsertReplaceExisting: true
   scrollSize: 2

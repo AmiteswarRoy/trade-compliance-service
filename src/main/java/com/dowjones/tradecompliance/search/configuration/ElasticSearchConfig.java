@@ -12,8 +12,6 @@ public class ElasticSearchConfig {
 	private String index;
 	private String clusterName;
 	private String fileType;
-	private String groupIndex;
-	private String groupType;
 	private Integer maxResultsToFetch;
 	private Boolean onInsertReplaceExisting;
 	private Integer scrollSize;
@@ -54,23 +52,11 @@ public class ElasticSearchConfig {
 	public void setFileType(String fileType) {
 		this.fileType = fileType;
 	}
-	public String getGroupIndex() {
-		return groupIndex;
-	}
-	public void setGroupIndex(String groupIndex) {
-		this.groupIndex = groupIndex;
-	}
 	public Integer getMaxResultsToFetch() {
 		return maxResultsToFetch;
 	}
 	public void setMaxResultsToFetch(Integer maxResultsToFetch) {
 		this.maxResultsToFetch = maxResultsToFetch;
-	}
-	public String getGroupType() {
-		return groupType;
-	}
-	public void setGroupType(String groupType) {
-		this.groupType = groupType;
 	}
 	public Integer getScrollSize() {
 		return scrollSize;
