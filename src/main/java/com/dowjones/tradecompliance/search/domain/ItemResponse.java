@@ -6,27 +6,29 @@ package com.dowjones.tradecompliance.search.domain;
  * @author Infosys
  *
  */
-public class ItemCreationResponse {
-	private String status;
+public class ItemResponse {
 	private String message;
-	private int responseCode;
+	private Integer responseCode;
 	
-	public String getStatus() {
-		return status;
+	public ItemResponse() {
+		// TODO Auto-generated constructor stub
 	}
-	public void setStatus(String status) {
-		this.status = status;
+	
+	public ItemResponse(String message, int responseCode) {
+		this.message = message;
+		this.responseCode = responseCode;
 	}
+	
 	public String getMessage() {
 		return message;
 	}
 	public void setMessage(String message) {
 		this.message = message;
 	}
-	public int getResponseCode() {
+	public Integer getResponseCode() {
 		return responseCode;
 	}
-	public void setResponseCode(int responseCode) {
+	public void setResponseCode(Integer responseCode) {
 		this.responseCode = responseCode;
 	}
 	

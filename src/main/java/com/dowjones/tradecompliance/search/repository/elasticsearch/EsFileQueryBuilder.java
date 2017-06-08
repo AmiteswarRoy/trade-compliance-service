@@ -5,26 +5,99 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.lucene.queryparser.xml.QueryBuilderFactory;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
+import com.dowjones.tradecompliance.search.configuration.ElasticSearchConfig;
 import com.dowjones.tradecompliance.search.domain.FileSearchableData;
+import com.dowjones.tradecompliance.search.domain.SearchCriteria;
 
+/**
+ * @author swathi_c05
+ * @Descrpiton To generate query strings
+ * 
+ */
+@Component
 public class EsFileQueryBuilder {
 	private Logger logger = LogManager.getLogger(EsFileQueryBuilder.class);
 
-	public SearchSourceBuilder buildFileSearchQuery(FileSearchableData criteria) throws Exception {
+	@Autowired
+	@Qualifier("FileSearchCriteria")
+	private List<CriteriaProcessor<SearchCriteria>> fileSearchCriteria;
+
+	@Autowired
+	private ElasticSearchConfig config;
+
+	/**
+	 * @Description - Method to build the query
+	 * @param FileSearchableData
+	 * @return SearchSourceBuilder
+	 * @exception java.lang.Exception
+	 */
+	public SearchSourceBuilder buildFileSearchQuery(FileSearchableData searchableData) throws Exception {
 		logger.debug("Into Query builder");
+
 		List<String> invalidCriteria = new ArrayList<String>();
-		
-		/*QueryComponents components = validateAndBuildFileQueryComponents(criteria, invalidCriteria);
-		
+		QueryComponents components = validateAndBuildFileQueryComponents(searchableData, invalidCriteria);
 		confirmValidFileQuery(invalidCriteria);
-		
-		QueryBuilders.mulmultiMatchQuery(components, fieldNames);*/
-		
-		return null;
+
+		return buildFileSearchQueryFromComponents(components);
 	}
-	
+
+	/**
+	 * @Description - Construct ES queries based on criteria
+	 * @param FileSearchableData
+	 * @return QueryComponents
+	 * @exception java.lang.Exception
+	 */
+	private QueryComponents validateAndBuildFileQueryComponents(FileSearchableData searchableData,
+			List<String> invalidCriteria) throws Exception {
+		QueryComponents components = new QueryComponents();
+		for (CriteriaProcessor<SearchCriteria> processor : fileSearchCriteria) {
+			if (processor.hasCriteria(searchableData.getCriteria(), invalidCriteria)) {
+				processor.processCriteria(searchableData.getCriteria(), components);
+			}
+		}
+
+		return components;
+	}
+
+	/**
+	 * @Description - To check the invalid query
+	 * @param List<String>
+	 * @return 
+	 * @exception java.lang.Exception
+	 */
+	private void confirmValidFileQuery(List<String> invalidCriteria) throws Exception {
+		if (!invalidCriteria.isEmpty()) {
+			StringBuilder message = new StringBuilder("Invalid Search Criteria:");
+			for (String reason : invalidCriteria) {
+				message.append(reason).append(";");
+			}
+			logger.error(message);
+			throw new Exception();
+		}
+	}
+
+	/**
+	 * @Description - Executing the constructed query
+	 * @param QueryComponents
+	 * @return SearchSourceBuilder
+	 * @exception java.lang.Exception
+	 */
+	private SearchSourceBuilder buildFileSearchQueryFromComponents(QueryComponents components) throws Exception {
+		SearchSourceBuilder search = new SearchSourceBuilder();
+
+		search.fetchSource(
+				(components.getSources().size() > 0
+						? components.getSources().toArray(new String[components.getSources().size()]) : null),
+				null);
+		search.query(components.getBoolQuery());
+		search.size(config.getMaxResultsToFetch());
+
+		return search;
+	}
+
 }

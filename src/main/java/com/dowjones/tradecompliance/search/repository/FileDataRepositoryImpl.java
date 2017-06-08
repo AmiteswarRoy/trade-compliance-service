@@ -3,16 +3,21 @@ package com.dowjones.tradecompliance.search.repository;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.searchbox.core.Index;
+import org.apache.commons.lang.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import com.dowjones.tradecompliance.search.configuration.ElasticSearchConfig;
+import com.dowjones.tradecompliance.search.domain.FileData;
 import com.dowjones.tradecompliance.search.domain.FileQueryResults;
 import com.dowjones.tradecompliance.search.domain.FileSearchableData;
-import com.dowjones.tradecompliance.search.domain.ItemCreationResponse;
+import com.dowjones.tradecompliance.search.domain.ItemResponse;
 import com.dowjones.tradecompliance.search.domain.TradeItem;
+import com.dowjones.tradecompliance.search.repository.elasticsearch.EsFileQueryBuilder;
+import com.dowjones.tradecompliance.search.util.ConversionService;
 import com.dowjones.tradecompliance.search.util.ItemConstants;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -22,6 +27,10 @@ import io.searchbox.client.JestClientFactory;
 import io.searchbox.client.JestResult;
 import io.searchbox.client.config.HttpClientConfig;
 import io.searchbox.core.Bulk;
+import io.searchbox.core.DeleteByQuery;
+import io.searchbox.core.Index;
+import io.searchbox.core.Search;
+import io.searchbox.core.SearchResult;
 
 /**
  * 
@@ -32,10 +41,14 @@ import io.searchbox.core.Bulk;
 @Repository
 @Qualifier("FileDataRepositoryImpl")
 public class FileDataRepositoryImpl implements FileDataRepository{
-	//@Autowired
-	ElasticSearchConfig config;
+
+	private static Logger logger = LogManager.getLogger(FileDataRepositoryImpl.class);
+	private ElasticSearchConfig config;
 	private Gson gson;
 	private JestClient client;
+	
+	@Autowired
+	private EsFileQueryBuilder fileQueryBuilder;
 	
 	public FileDataRepositoryImpl(@Autowired
 			ElasticSearchConfig cfg) {
@@ -51,22 +64,47 @@ public class FileDataRepositoryImpl implements FileDataRepository{
 		
 	}
 
+	/**
+	 * 
+	 * @Description Search files from elastic search based on criteria 
+	 * @param FileSearchableData
+	 * @return FileQueryResults
+	 * @exception java.lang.Exception
+	 */
 	@Override
 	public FileQueryResults searchFiles(FileSearchableData searchableData) throws Exception {
-
-		return null;
+		logger.debug("Inside search file method to connect to elastic search");
+		FileQueryResults results = new FileQueryResults();
+		String queryString = fileQueryBuilder.buildFileSearchQuery(searchableData).toString();
+		
+		Search search = new Search.Builder(queryString).addIndex(config.getIndex()).addType(config.getFileType()).build();
+		SearchResult searchResult = client.execute(search);
+		
+		if(!searchResult.isSucceeded()) {
+			logger.error("Search Failed from elastic search");
+			throw new IllegalStateException("The search failed : "+searchResult.getJsonString());
+		}
+		
+		if(StringUtils.isEmpty(searchResult.getErrorMessage()) && StringUtils.isBlank(searchResult.getErrorMessage())) {
+			results = populateSearchResults(searchResult);
+			results.setResponseCode(null);
+			
+		} else { 
+			logger.error("File Search failed : "+searchResult.getErrorMessage());
+		}
+		return results;
 	}
 
 	/**
 	 * 
 	 * @Description Connect to elastic search and create trade item
 	 * @param Trade Item
-	 * @author Infosys
-	 * 
+	 * @return ItemResponse
+	 * @exception java.lang.Exception
 	 */
 	@Override
-	public ItemCreationResponse createFile(TradeItem item) throws Exception {
-		ItemCreationResponse response = new ItemCreationResponse();
+	public ItemResponse createFile(TradeItem item) throws Exception {
+		ItemResponse response = new ItemResponse();
 		if (item != null) {
 			try{
 				String fileJson = gson.toJson(item);
@@ -75,29 +113,26 @@ public class FileDataRepositoryImpl implements FileDataRepository{
 						.type(config.getFileType())
 						.refresh(true)
 						.build();
-				System.out.println("Index "+index.getURI());
+				logger.debug("Index "+index.getURI());
 				JestResult result = client.execute(index);
 				if (result.isSucceeded()) {
 					response.setResponseCode(result.getResponseCode());
 					response.setMessage(ItemConstants.ITEM_CREATION_SUCCESS);
-					response.setStatus(ItemConstants.SUCCESS);
 					return response;
 				}else{
 					response.setResponseCode(result.getResponseCode());
 					response.setMessage(ItemConstants.ITEM_CREATION_FAILURE);
-					response.setStatus(ItemConstants.FAILURE);
 					return null;
 				}
 			}catch(Exception e){
-				System.out.println("Error while creating Trade Item in Elastic - "+e);
-				response.setMessage(ItemConstants.ITEM_CREATION_ERROR);
-				response.setStatus(ItemConstants.FAILURE);
+				logger.error("Error while creating Trade Item in Elastic - "+e);
+				response.setMessage(ItemConstants.ITEM_CREATION_ERROR +" "+e.getMessage());
 				response.setResponseCode(ItemConstants.ERRORCODE);
 				return response;
 			}
 			
 		} else {
-			System.out.println("Item cannot be null.");
+			logger.error("Item cannot be null.");
 			return null;
 		}
 	}
@@ -106,18 +141,19 @@ public class FileDataRepositoryImpl implements FileDataRepository{
 	 * 
 	 * @Description Connect to elastic search and create bulk trade items
 	 * @param List of trade Items
-	 * @author Infosys
+	 * @return ItemResponse
+	 * @exception java.lang.Exception
 	 * 
 	 */
 	@Override
-	public ItemCreationResponse createBulkFiles(List<TradeItem> files) throws Exception {
-		ItemCreationResponse response = new ItemCreationResponse();
+	public ItemResponse createBulkFiles(List<TradeItem> files) throws Exception {
+		ItemResponse response = new ItemResponse();
 		if (files != null) {
 			List<Index> indexToInsert = new ArrayList<Index>();
 			try{
 				for(TradeItem file:files){
 					String fileJson = gson.toJson(file);
-					System.out.println("input json -"+fileJson);
+					logger.debug("input json -"+fileJson);
 					Index index = new Index.Builder(fileJson)
 							.index(config.getIndex())
 							.type(config.getFileType())
@@ -126,7 +162,7 @@ public class FileDataRepositoryImpl implements FileDataRepository{
 					indexToInsert.add(index);
 				}
 				
-				System.out.println(" No.of Docs - "+indexToInsert.size());
+				logger.info(" No.of Docs - "+indexToInsert.size());
 				Bulk bulk = new Bulk.Builder().defaultIndex(config.getIndex())
 							.defaultType(config.getFileType())
 							.addAction(indexToInsert).build();
@@ -134,26 +170,85 @@ public class FileDataRepositoryImpl implements FileDataRepository{
 				if (result.isSucceeded()) {
 					response.setResponseCode(result.getResponseCode());
 					response.setMessage(ItemConstants.ITEM_CREATION_SUCCESS);
-					response.setStatus(ItemConstants.SUCCESS);
 					return response;
 				}else{
 					response.setResponseCode(result.getResponseCode());
 					response.setMessage(ItemConstants.ITEM_CREATION_FAILURE);
-					response.setStatus(ItemConstants.FAILURE);
 					return null;
 				}
 			}catch(Exception e){
-				System.out.println("Error while creating Bulk Trade Items in Elastic - "+e);
-				response.setMessage(ItemConstants.ITEM_CREATION_ERROR);
-				response.setStatus(ItemConstants.FAILURE);
+				logger.error("Error while creating Bulk Trade Items in Elastic - "+e);
+				response.setMessage(ItemConstants.ITEM_CREATION_ERROR+" " +e.getMessage());
 				response.setResponseCode(ItemConstants.ERRORCODE);
 				return response;
 			}
 			
 		} else {
-			System.out.println("Item cannot be null.");
+			logger.error("Item cannot be null.");
 			return null;
 		}
+	}
+	
+	/**
+	 * @Description Delete all items from index
+	 * @param 
+	 * @return return status of delete operation
+	 * @exception java.lang.Exception
+	 */
+	@Override
+	public ItemResponse deleteAllItems() throws Exception{
+		ItemResponse response = new ItemResponse();
+		String query = ItemConstants.DELETE_ALL_QUERY;
+		
+		try{
+			DeleteByQuery deleteByQuery = new DeleteByQuery.Builder(query)
+											.addIndex(config.getIndex())
+											.addType(config.getFileType())
+											.build();
+			JestResult result = client.execute(deleteByQuery);
+			logger.debug("Status - "+result.isSucceeded());
+			logger.info("Deleted count - "+result.getValue("deleted"));
+			if(result.isSucceeded()){
+				response.setResponseCode(result.getResponseCode());
+				response.setMessage(result.getValue("deleted") + " "+ ItemConstants.DELETE_SUCCESS);
+				return response;
+			}else{
+				response.setResponseCode(result.getResponseCode());
+				response.setMessage(ItemConstants.DELETE_FAILURE);
+				return response;
+			}
+			
+		}catch(Exception e){
+			logger.error("Error while deleting items"+e);
+			response.setResponseCode(ItemConstants.ERRORCODE);
+			response.setMessage(ItemConstants.DELETE_FAILURE +" " +e.getMessage());
+			return response;
+		}
+		
+	}
+	
+	/**
+	 * 
+	 * @Description Convert the response from Elastic Search to required format
+	 * @param SearchResult
+	 * @return FileQueryResults
+	 * @exception java.lang.Exception
+	 */
+	private FileQueryResults populateSearchResults(SearchResult searchResult) {
+		FileQueryResults results = new FileQueryResults();
+		results.setHits(searchResult.getTotal());
+		
+		List<FileData> files = new ArrayList<FileData>();
+		List<SearchResult.Hit<TradeItem, Void>> hitsFromSearch = searchResult.getHits(TradeItem.class);
+		
+		for(SearchResult.Hit<TradeItem, Void> singleHitValue : hitsFromSearch) {
+			files.add(ConversionService.convertTradeItemToFileData(singleHitValue.source));
+		}
+		
+		results.setFiles(files);
+		
+		return results;
+		
 	}
 
 }

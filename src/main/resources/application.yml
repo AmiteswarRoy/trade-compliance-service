@@ -10,13 +10,19 @@ elasticsearch:
   serverUri: "http://localhost:9200"
   connectTimeOut: 90000
   readTimeOut: 90000
-  index: "compliancesearch"
+  index: "file"
   clusterName: "compliance"
-  fileType: "files_v1"
-  maxResultsToFetch: 2000
+  fileType: "file"
+  maxResultsToFetch: 500
   onInsertReplaceExisting: true
   scrollSize: 2
   scrollTime: 1m
   
+spring:
+  profiles:
+    active: "dev"
+
+logging:
+  config: classpath:log4j2.yaml
 
 

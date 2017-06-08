@@ -1,40 +1,31 @@
 package com.dowjones.tradecompliance.search.util;
 
-import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.dowjones.tradecompliance.search.domain.BaseResponse;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.dowjones.tradecompliance.search.domain.ItemResponse;
 
 public class BuildResponseUtil {
-	private static Gson gson = new GsonBuilder().create();
 	
 	public static ResponseEntity<?> createSuccessfulResponse(String message) {
-		return createSuccessfulResponse(new BaseResponse(message), HttpStatus.OK);
+		return createSuccessfulResponse(new ItemResponse().getMessage(), HttpStatus.OK);
 	}
 	
 	public static ResponseEntity<?> createSuccessfulResponse(String message, HttpStatus status) {
-		return createSuccessfulResponse(new BaseResponse(message), status);
+		return createSuccessfulResponse(new ItemResponse().getMessage(), status);
 	}
 	
-	public static ResponseEntity<?> createSuccessfulResponse(BaseResponse response) {
+	public static ResponseEntity<?> createSuccessfulResponse(ItemResponse response) {
 		return createSuccessfulResponse(response, HttpStatus.OK);
 	}
 	
-	public static ResponseEntity<?> createSuccessfulResponse(BaseResponse response, HttpStatus status) {
+	public static ResponseEntity<?> createSuccessfulResponse(ItemResponse response, HttpStatus status) {
 		//String responseJson = gson.toJson(response);
 		return new ResponseEntity(response, status);
 	}
 	
-	public static ResponseEntity<?> createErrorResponse(String errorCode, String errorMessage, HttpStatus status) {
-		return new ResponseEntity(new BaseResponse(errorCode, errorMessage), status);
+	public static ResponseEntity<?> createErrorResponse(int errorCode, String errorMessage, HttpStatus status) {
+		return new ResponseEntity(new ItemResponse(errorMessage, errorCode), status);
 	}
 	
-	public static ResponseEntity<?> createErrorResponse(String errorCode, List<String> errorMessages, HttpStatus status) {
-		return new ResponseEntity(new BaseResponse(errorCode, errorMessages), status);
-	}
-
 }

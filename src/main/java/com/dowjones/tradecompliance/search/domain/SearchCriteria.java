@@ -3,7 +3,10 @@ package com.dowjones.tradecompliance.search.domain;
 import java.io.Serializable;
 import java.util.List;
 
-public class SearchCriteria implements Serializable {
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
+public class SearchCriteria {
 	
 private List<String> goods;
 	

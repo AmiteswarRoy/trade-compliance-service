@@ -1,7 +1,5 @@
 package com.dowjones.tradecompliance.search.domain;
 
-import java.util.List;
-
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -25,6 +23,8 @@ public class TradeItem {
 	private String region_restriction_sources;
 	private String goods_codes_1;
 	private String goods_codes_2;
+	private String goods_codes_3;
+	private String goods;
 
 	public TradeItem() { }
 	
@@ -124,188 +124,19 @@ public class TradeItem {
 		this.goods_codes_2 = goods_codes_2;
 	}
 
-	/*public String getType() {
-		return type;
+	public String getGoods_codes_3() {
+		return goods_codes_3;
 	}
-
-	public void setType(String type) {
-		this.type = type;
+	
+	public void setGoods_codes_3(String goods_codes_3) {
+		this.goods_codes_3 = goods_codes_3;
 	}
-
-	public Long getSize() {
-		return size;
+	
+	public String getGoods() {
+		return goods;
 	}
-
-	public void setSize(Long size) {
-		this.size = size;
+	
+	public void setGoods(String goods) {
+		this.goods = goods;
 	}
-
-	public String getText() {
-		return text;
-	}
-
-	public void setText(String text) {
-		this.text = text;
-	}
-
-	public String getCreatedBy() {
-		return createdBy;
-	}
-
-	public void setCreatedBy(String createdBy) {
-		this.createdBy = createdBy;
-	}
-
-	public Long getCreatedDate() {
-		return createdDate;
-	}
-
-	public void setCreatedDate(Long createdDate) {
-		this.createdDate = createdDate;
-	}
-
-	public String getDocType() {
-		return docType;
-	}
-
-	public void setDocType(String docType) {
-		this.docType = docType;
-	}
-
-	public String getDocUri() {
-		return docUri;
-	}
-
-	public void setDocUri(String docUri) {
-		this.docUri = docUri;
-	}
-
-	public String getUpdatedBy() {
-		return updatedBy;
-	}
-
-	public void setUpdatedBy(String updatedBy) {
-		this.updatedBy = updatedBy;
-	}
-
-	public Long getUpdatedDate() {
-		return updatedDate;
-	}
-
-	public void setUpdatedDate(Long updatedDate) {
-		this.updatedDate = updatedDate;
-	}
-
-	public String getPrivacy() {
-		return privacy;
-	}
-
-	public void setPrivacy(String privacy) {
-		this.privacy = privacy;
-	}
-
-	public String getGroup() {
-		return group;
-	}
-
-	public void setGroup(String group) {
-		this.group = group;
-	}
-
-	public String getSource() {
-		return source;
-	}
-
-	public void setSource(String source) {
-		this.source = source;
-	}
-
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	public String getBibAuthor() {
-		return bibAuthor;
-	}
-
-	public void setBibAuthor(String bibAuthor) {
-		this.bibAuthor = bibAuthor;
-	}
-
-	public String getBibTitle() {
-		return bibTitle;
-	}
-
-	public void setBibTitle(String bibTitle) {
-		this.bibTitle = bibTitle;
-	}
-
-	public String getBibDescription() {
-		return bibDescription;
-	}
-
-	public void setBibDescription(String bibDescription) {
-		this.bibDescription = bibDescription;
-	}
-
-	public Integer getBibPageCount() {
-		return bibPageCount;
-	}
-
-	public void setBibPageCount(Integer bibPageCount) {
-		this.bibPageCount = bibPageCount;
-	}
-
-	public List<String> getSystemTags() {
-		return systemTags;
-	}
-
-	public void setSystemTags(List<String> systemTags) {
-		this.systemTags = systemTags;
-	}
-
-	public List<String> getCustomTags() {
-		return customTags;
-	}
-
-	public void setCustomTags(List<String> customTags) {
-		this.customTags = customTags;
-	}
-
-	public String getIeeePrivacy() {
-		return ieeePrivacy;
-	}
-
-	public void setIeeePrivacy(String ieeePrivacy) {
-		this.ieeePrivacy = ieeePrivacy;
-	}
-
-	public String getNonIeeeCopyRight() {
-		return nonIeeeCopyRight;
-	}
-
-	public void setNonIeeeCopyRight(String nonIeeeCopyRight) {
-		this.nonIeeeCopyRight = nonIeeeCopyRight;
-	}
-
-	public Boolean getDownloadable() {
-		return downloadable;
-	}
-
-	public void setDownloadable(Boolean downloadable) {
-		this.downloadable = downloadable;
-	}
-
-	public Boolean getViewable() {
-		return viewable;
-	}
-
-	public void setViewable(Boolean viewable) {
-		this.viewable = viewable;
-	}*/
-
 }

@@ -4,51 +4,31 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
+@JsonSerialize
 @Component
 public class FileData {
-	private String itemCode;
-	private String itemDescription;
-	private String matchPhrase;
-	private String goodsCodes1;
-	private String goodsCodes2;
-	private String goodsCodes3;
+	private String item_code;
+	private String item_description;
+	private String match_phrase;
 	private String goods;
-	public String getItemCode() {
-		return itemCode;
+	
+	public String getItem_code() {
+		return item_code;
 	}
-	public void setItemCode(String itemCode) {
-		this.itemCode = itemCode;
+	public void setItem_code(String item_code) {
+		this.item_code = item_code;
 	}
-	public String getItemDescription() {
-		return itemDescription;
+	public String getItem_description() {
+		return item_description;
 	}
-	public void setItemDescription(String itemDescription) {
-		this.itemDescription = itemDescription;
+	public void setItem_description(String item_description) {
+		this.item_description = item_description;
 	}
-	public String getMatchPhrase() {
-		return matchPhrase;
+	public String getMatch_phrase() {
+		return match_phrase;
 	}
-	public void setMatchPhrase(String matchPhrase) {
-		this.matchPhrase = matchPhrase;
-	}
-	public String getGoodsCodes1() {
-		return goodsCodes1;
-	}
-	public void setGoodsCodes1(String goodsCodes1) {
-		this.goodsCodes1 = goodsCodes1;
-	}
-	public String getGoodsCodes2() {
-		return goodsCodes2;
-	}
-	public void setGoodsCodes2(String goodsCodes2) {
-		this.goodsCodes2 = goodsCodes2;
-	}
-	public String getGoodsCodes3() {
-		return goodsCodes3;
-	}
-	public void setGoodsCodes3(String goodsCodes3) {
-		this.goodsCodes3 = goodsCodes3;
+	public void setMatch_phrase(String match_phrase) {
+		this.match_phrase = match_phrase;
 	}
 	public String getGoods() {
 		return goods;

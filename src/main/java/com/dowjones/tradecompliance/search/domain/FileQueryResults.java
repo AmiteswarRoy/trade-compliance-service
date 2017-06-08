@@ -8,19 +8,18 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
 @Component
-public class FileQueryResults extends BaseResponse {
-	private Integer totalHits;
+public class FileQueryResults extends ItemResponse {
+	private Integer hits;
 	private List<FileData> files;
 	
 	public FileQueryResults() { }
 	
-	public Integer getTotalHits() {
-		return totalHits;
+	public Integer getHits() {
+		return hits;
 	}
-	public void setTotalHits(Integer totalHits) {
-		this.totalHits = totalHits;
+	public void setHits(Integer hits) {
+		this.hits = hits;
 	}
-	
 	public List<FileData> getFiles() {
 		return files;
 	}

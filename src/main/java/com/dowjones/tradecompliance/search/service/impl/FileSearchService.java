@@ -1,22 +1,20 @@
 package com.dowjones.tradecompliance.search.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.dowjones.tradecompliance.search.aop.EnableInstrumentation;
-import com.dowjones.tradecompliance.search.domain.FileData;
 import com.dowjones.tradecompliance.search.domain.FileQueryResults;
 import com.dowjones.tradecompliance.search.domain.FileSearchableData;
-import com.dowjones.tradecompliance.search.domain.ItemCreationResponse;
+import com.dowjones.tradecompliance.search.domain.ItemResponse;
 import com.dowjones.tradecompliance.search.domain.TradeItem;
 import com.dowjones.tradecompliance.search.repository.FileDataRepository;
 import com.dowjones.tradecompliance.search.service.FileSearch;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 /**
  * 
@@ -27,15 +25,14 @@ import com.google.gson.GsonBuilder;
 @Service
 @Qualifier("FileSearchService")
 public class FileSearchService implements FileSearch {
-	//private Logger logger = LogManager.getLogger(FileSearchService.class);
-	private static Gson gson = new GsonBuilder().create();
+	private Logger logger = LogManager.getLogger(FileSearchService.class);
 
 	@Autowired
 	@Qualifier("FileDataRepositoryImpl")
 	FileDataRepository repository;
 
 	/**
-	 * @Description - Method to search files based on criteria
+	 * @Description - Method to search files based on search criteria
 	 * @param - FileSearchableData json
 	 * @return - FileQueryResults json
 	 * @exception java.lang.Exception
@@ -43,59 +40,51 @@ public class FileSearchService implements FileSearch {
 	@Override
 	@EnableInstrumentation
 	public FileQueryResults searchFiles(FileSearchableData searchableData) throws Exception {
-
-		System.out.println("The input searchable data is :"+gson.toJson(searchableData));
-
-		FileQueryResults results = new FileQueryResults();
-		List<FileData> fileData = new ArrayList<FileData>();
-
-		FileData datas = new FileData();
-
-		datas.setItemCode(searchableData.getCriteria().getGoods().get(0));
-		datas.setItemDescription("First item description");
-		datas.setMatchPhrase("Goods");
-		datas.setGoodsCodes1("goodcodes1");
-		datas.setGoodsCodes2("goodcodes2");
-		datas.setGoodsCodes3("goodcodes3");
-		datas.setGoods("goods");
-
-		fileData.add(datas);
-
-		results.setTotalHits(1);
-		results.setFiles(fileData);
-
-		//results = repository.getFiles(searchableData);
-
-		System.out.println("The result data is :"+gson.toJson(results));
-
+		logger.debug("Inside file search service method");
+		FileQueryResults results = repository.searchFiles(searchableData);
 		return results;
 
 	}
 
 	/**
 	 * @Description - To create trade item in elastic search
-	 * @param - FileSearchableData 
-	 * @return - FileQueryResults
+	 * @param - TradeItem 
+	 * @return - ItemResponse
 	 * @exception java.lang.Exception
 	 * */
 	@Override
-	public ItemCreationResponse createFile(TradeItem file) throws Exception {
-		ItemCreationResponse response = repository.createFile(file);
+	public ItemResponse createFile(TradeItem file) throws Exception {
+		logger.debug("Inside create file service method");
+		ItemResponse response = repository.createFile(file);
 		return response;
 
 	}
 
 	/**
 	 * @Description - To create multiple trade items in elastic search
-	 * @param - FileSearchableData 
-	 * @return - FileQueryResults
+	 * @param - List<TradeItem> 
+	 * @return - ItemResponse
 	 * @exception java.lang.Exception
 	 * */
 	@Override
-	public ItemCreationResponse createBulkFiles(List<TradeItem> files) throws Exception {
-		ItemCreationResponse response = repository.createBulkFiles(files);
+	public ItemResponse createBulkFiles(List<TradeItem> files) throws Exception {
+		logger.debug("Inside create bulk files service method");
+		ItemResponse response = repository.createBulkFiles(files);
 		return response;
 
+	}
+	
+	/**
+	 * @Description - Deleting all the data in Elastic search
+	 * @param -  
+	 * @return - ItemResponse
+	 * @exception java.lang.Exception
+	 * */
+	@Override
+	public ItemResponse deleteAllItems() throws Exception {
+		logger.debug("Inside delete all service method");
+		ItemResponse response = repository.deleteAllItems();
+		return response;
 	}
 
 }
