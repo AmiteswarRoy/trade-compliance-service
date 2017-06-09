@@ -57,7 +57,7 @@ public class GoodsProcessor implements CriteriaProcessor<SearchCriteria> {
 		List<MultiMatchQueryBuilder> multiQuery = new ArrayList<MultiMatchQueryBuilder>();
 		
 		for(String good: criteria.getGoods()) {
-			multiQuery.add(QueryBuilders.multiMatchQuery(good, fieldNames));
+			multiQuery.add(QueryBuilders.multiMatchQuery(good, fieldNames).fuzziness("AUTO"));
 		}
 		
 		for(MultiMatchQueryBuilder multiMatchQuery : multiQuery) {
