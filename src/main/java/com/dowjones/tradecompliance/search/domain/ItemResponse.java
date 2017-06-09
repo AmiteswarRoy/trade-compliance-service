@@ -19,6 +19,10 @@ public class ItemResponse {
 		this.responseCode = responseCode;
 	}
 	
+	public ItemResponse(String message) {
+		this.message = message;
+	}
+	
 	public String getMessage() {
 		return message;
 	}
