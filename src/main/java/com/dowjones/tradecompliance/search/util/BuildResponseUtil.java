@@ -8,12 +8,12 @@ import com.dowjones.tradecompliance.search.domain.ItemResponse;
 public class BuildResponseUtil {
 	
 	public static ResponseEntity<?> createSuccessfulResponse(String message) {
-		return createSuccessfulResponse(new ItemResponse().getMessage(), HttpStatus.OK);
+		return createSuccessfulResponse(new ItemResponse(message), HttpStatus.OK);
 	}
 	
 	public static ResponseEntity<?> createSuccessfulResponse(String message, HttpStatus status) {
-		return createSuccessfulResponse(new ItemResponse().getMessage(), status);
-	}
+		return createSuccessfulResponse(new ItemResponse(message), status);
+	} 
 	
 	public static ResponseEntity<?> createSuccessfulResponse(ItemResponse response) {
 		return createSuccessfulResponse(response, HttpStatus.OK);

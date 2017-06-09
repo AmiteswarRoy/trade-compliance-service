@@ -1,20 +1,4 @@
-1.Delete existing file data
---------------------------
-HttpMethod : DELETE
-URL : http://localhost:9200/file/
-Request object :
-{
- "query" : {
- 	"match_all" : {}
- }
-} 
-
-Response object :
-{
-  "acknowledged": true
-}
-
-2.Create file index
+1.Create file index
 ---------------
 HttpMethod : PUT
 URL : http://localhost:9200/file
@@ -31,9 +15,8 @@ Response:
   "acknowledged": true,
   "shards_acknowledged": true
 }
-
-3. Create file mapping
------------------
+2. Create file mapping
+----------------
 HttpMethod : POST
 URL : http://localhost:9200/file/file/_mapping
 Payload:
@@ -102,12 +85,22 @@ Response:
 {
   "acknowledged": true
 }
-
-4.Adding file data
+3.Adding file data
 ---------------
-To delete exiting data
-HttpMethod : DELETE
-URL : http://localhost:9900/search/v1/deleteItems
+To delete exiting data, if required
+HttpMethod : POST
+URL : http://localhost:9200/file/file/_delete_by_query
+Request object :
+{
+ "query" : {
+ 	"match_all" : {}
+ }
+} 
+
+Response object :
+{
+  "acknowledged": true
+}
 
 To add all files
 HttpMethod : POST
@@ -130,6 +123,35 @@ Response:
   "created": true
 }
 
+4. Search API endpoint 
+-----------------
+HttpMethod : POST
+URL : http://localhost:9900/search/v1/searchData
+Payload:
+{
+	"criteria" : {
+		"goods" : ["hexafluorosilicate","methylphosphonite"]
+	}
+}
+Response:
+{
+    "hits": 2,
+    "files": [
+        {
+            "item_code": "ML7.c",
+            "item_description": "Chemical warfare (CW) binary precursors and key precursors",
+            "match_phrase": "Sodium hexafluorosilicate",
+            "goods": null
+        },
+        {
+            "item_code": "ML7.c",
+            "item_description": "Chemical warfare (CW) binary precursors and key precursors",
+            "match_phrase": "Diethyl methylphosphonite",
+            "goods": null
+        }
+    ]
+}
+
 5.Checking data with search query
 -----------------
 HttpMethod : GET
@@ -137,7 +159,7 @@ URL : http://localhost:9200/file/file/_search
 
 Response :
 {
-  "took": 321,
+  "took": 648,
   "timed_out": false,
   "_shards": {
     "total": 8,
@@ -166,72 +188,6 @@ Response :
           "goods_codes_2": "8543709099",
           "goods_codes_3": null,
           "goods": "85437090,8543709099"
-        }
-      },
-      {
-        "_index": "file",
-        "_type": "file",
-        "_id": "AVyMS6B20ZGBGwdMbjoQ",
-        "_score": 1,
-        "_source": {
-          "regulation_id": "5;6;7;8;9",
-          "regulation_short_code": "USCCL;EC428/2009;UKSECL;HKIESCR;SSGCL",
-          "item_code": "0B001.a.9",
-          "item_description": "a. Plant specially designed for separating isotopes of \"natural uranium\" and \"depleted uranium\", \"special fissile materials\" and \"other fissile materials\", as follows:    a.9. Electro magnetic separation plant;",
-          "match_phrase": "electromagnetic isotope separation",
-          "match_phrase_type": "1",
-          "region_restriction_type": "Generally Restricted, additional Specific Prohibitions may apply",
-          "region_restriction_names": "North Korea; Russia",
-          "region_restriction_iso_2": "KP; RU",
-          "region_restriction_sources": "105; 108",
-          "goods_codes_1": null,
-          "goods_codes_2": null,
-          "goods_codes_3": null,
-          "goods": null
-        }
-      },
-      {
-        "_index": "file",
-        "_type": "file",
-        "_id": "AVyMS97Q0ZGBGwdMbjoR",
-        "_score": 1,
-        "_source": {
-          "regulation_id": "5;6;7;8;9",
-          "regulation_short_code": "USCCL;EC428/2009;UKSECL;HKIESCR;SSGCL",
-          "item_code": "0A001.f",
-          "item_description": "Zirconium metal and alloys in the form of tubes or assemblies of tubes in which the ratio of hafnium to zirconium is less than 1:500 parts by weight, specially designed or prepared for use in a \"nuclear reactor\"",
-          "match_phrase": "zirconium oxide",
-          "match_phrase_type": "1",
-          "region_restriction_type": "Generally Restricted, additional Specific Prohibitions may apply",
-          "region_restriction_names": "North Korea; Russia",
-          "region_restriction_iso_2": "KP; RU",
-          "region_restriction_sources": "105; 108",
-          "goods_codes_1": null,
-          "goods_codes_2": null,
-          "goods_codes_3": " CAS 1314-23-4",
-          "goods": " CAS 1314-23-4"
-        }
-      },
-      {
-        "_index": "file",
-        "_type": "file",
-        "_id": "AVyMRuxN0ZGBGwdMbjoO",
-        "_score": 1,
-        "_source": {
-          "regulation_id": "5",
-          "regulation_short_code": "USCCL",
-          "item_code": "0A987",
-          "item_description": "Optical sighting devices for firearms (including shotguns controlled by 0A984); and parts (See list of items controlled).",
-          "match_phrase": "Red dot sight",
-          "match_phrase_type": "1",
-          "region_restriction_type": "Generally Restricted, additional Specific Prohibitions may apply",
-          "region_restriction_names": "Belarus; Iran; Libya; Myanmar; Zimbabwe",
-          "region_restriction_iso_2": "BY; IR; LY; MM; ZW",
-          "region_restriction_sources": "102; 112; 113; 114; 115",
-          "goods_codes_1": "93052000",
-          "goods_codes_2": "9305200090",
-          "goods_codes_3": null,
-          "goods": "93052000,9305200090"
         }
       }
     ]
@@ -277,32 +233,29 @@ Response :
     "failed": 0
   },
   "hits": {
-    "total": 1,
-    "max_score": 0.2506009,
+    "total": 18,
+    "max_score": 4.382082,
     "hits": [
       {
         "_index": "file",
         "_type": "file",
-        "_id": "AVyMTB0T0ZGBGwdMbjoS",
-        "_score": 0.2506009,
+        "_id": "AVyNAz2szwhPkRirs0YT",
+        "_score": 4.382082,
         "_source": {
-          "regulation_id": "5",
-          "regulation_short_code": "USCCL",
-          "item_code": "0A985",
-          "item_description": "Discharge type arms and devices to administer electric shock, for example, stun guns, shock batons, shock shields, electric cattle prods, immobilization guns and projectiles; except equipment used exclusively to treat or tranquilize animals, and except arms designed solely for signal, flare, or saluting use; and parts, n.e.s.",
-          "match_phrase": "TaserModel C2 stun gun",
-          "match_phrase_type": "2",
-          "region_restriction_type": "Generally Restricted",
-          "region_restriction_sources": "110",
-          "goods_codes_1": "85437090",
-          "goods_codes_2": "8543709099",
-          "goods_codes_3": null,
-          "goods": "85437090,8543709099"
+          "regulation_id": "0;5;6;7;8;9",
+          "regulation_short_code": "WA;USCCL;EC428/2009;UKSECL;HKIESCR;SSGCL",
+          "item_code": "2.B.1.d",
+          "item_description": "Electrical discharge machines (EDM) of the non-wire type which have two or more rotary axes which can be coordinated simultaneously for \"contouring control\";",
+          "match_phrase": "wire erosion machine",
+          "match_phrase_type": "1",
+          "region_restriction_type": "Generally Restricted, additional Specific Prohibitions may apply",
+          "region_restriction_names": "North Korea; Russia",
+          "region_restriction_iso_2": "KP; RU",
+          "region_restriction_sources": "105; 108"
         }
       }
     ]
   }
-} "created": true
 }
 
 7. Simple search with multiple string input
@@ -357,78 +310,32 @@ Response :
     "failed": 0
   },
   "hits": {
-    "total": 3,
-    "max_score": 0.3900497,
+    "total": 211,
+    "max_score": 5.7619505,
     "hits": [
       {
         "_index": "file",
         "_type": "file",
-        "_id": "AVyMS97Q0ZGBGwdMbjoR",
-        "_score": 0.3900497,
+        "_id": "AVyNAz2rzwhPkRirs0TS",
+        "_score": 5.7619505,
         "_source": {
           "regulation_id": "5;6;7;8;9",
           "regulation_short_code": "USCCL;EC428/2009;UKSECL;HKIESCR;SSGCL",
           "item_code": "0A001.f",
           "item_description": "Zirconium metal and alloys in the form of tubes or assemblies of tubes in which the ratio of hafnium to zirconium is less than 1:500 parts by weight, specially designed or prepared for use in a \"nuclear reactor\"",
-          "match_phrase": "zirconium oxide",
+          "match_phrase": "pure-zirconium sponge",
           "match_phrase_type": "1",
           "region_restriction_type": "Generally Restricted, additional Specific Prohibitions may apply",
           "region_restriction_names": "North Korea; Russia",
           "region_restriction_iso_2": "KP; RU",
-          "region_restriction_sources": "105; 108",
-          "goods_codes_1": null,
-          "goods_codes_2": null,
-          "goods_codes_3": " CAS 1314-23-4",
-          "goods": " CAS 1314-23-4"
-        }
-      },
-      {
-        "_index": "file",
-        "_type": "file",
-        "_id": "AVyMRuxN0ZGBGwdMbjoO",
-        "_score": 0.26301134,
-        "_source": {
-          "regulation_id": "5",
-          "regulation_short_code": "USCCL",
-          "item_code": "0A987",
-          "item_description": "Optical sighting devices for firearms (including shotguns controlled by 0A984); and parts (See list of items controlled).",
-          "match_phrase": "Red dot sight",
-          "match_phrase_type": "1",
-          "region_restriction_type": "Generally Restricted, additional Specific Prohibitions may apply",
-          "region_restriction_names": "Belarus; Iran; Libya; Myanmar; Zimbabwe",
-          "region_restriction_iso_2": "BY; IR; LY; MM; ZW",
-          "region_restriction_sources": "102; 112; 113; 114; 115",
-          "goods_codes_1": "93052000",
-          "goods_codes_2": "9305200090",
-          "goods_codes_3": null,
-          "goods": "93052000,9305200090"
-        }
-      },
-      {
-        "_index": "file",
-        "_type": "file",
-        "_id": "AVyMTB0T0ZGBGwdMbjoS",
-        "_score": 0.2506009,
-        "_source": {
-          "regulation_id": "5",
-          "regulation_short_code": "USCCL",
-          "item_code": "0A985",
-          "item_description": "Discharge type arms and devices to administer electric shock, for example, stun guns, shock batons, shock shields, electric cattle prods, immobilization guns and projectiles; except equipment used exclusively to treat or tranquilize animals, and except arms designed solely for signal, flare, or saluting use; and parts, n.e.s.",
-          "match_phrase": "TaserModel C2 stun gun",
-          "match_phrase_type": "2",
-          "region_restriction_type": "Generally Restricted",
-          "region_restriction_sources": "110",
-          "goods_codes_1": "85437090",
-          "goods_codes_2": "8543709099",
-          "goods_codes_3": null,
-          "goods": "85437090,8543709099"
+          "region_restriction_sources": "105; 108"
         }
       }
     ]
   }
 }
 
-8. To test allowing word distance matching for multi-word searches
+8.To test allowing word distance matching for multi-word searchess
 ------------------------------------------------------------------------
 HttpMethod : POST
 URL : http://localhost:9200/file/file/_search
@@ -467,14 +374,14 @@ Response :
     "failed": 0
   },
   "hits": {
-    "total": 1,
-    "max_score": 0.6096393,
+    "total": 29,
+    "max_score": 8.243765,
     "hits": [
       {
         "_index": "file",
         "_type": "file",
-        "_id": "AVyMTB0T0ZGBGwdMbjoS",
-        "_score": 0.6096393,
+        "_id": "AVyNAz2qzwhPkRirs0SI",
+        "_score": 8.243765,
         "_source": {
           "regulation_id": "5",
           "regulation_short_code": "USCCL",
@@ -485,9 +392,7 @@ Response :
           "region_restriction_type": "Generally Restricted",
           "region_restriction_sources": "110",
           "goods_codes_1": "85437090",
-          "goods_codes_2": "8543709099",
-          "goods_codes_3": null,
-          "goods": "85437090,8543709099"
+          "goods_codes_2": "8543709099"
         }
       }
     ]
@@ -534,27 +439,25 @@ Response :
     "failed": 0
   },
   "hits": {
-    "total": 1,
-    "max_score": 0.5012018,
+    "total": 27,
+    "max_score": 8.764164,
     "hits": [
       {
         "_index": "file",
         "_type": "file",
-        "_id": "AVyMTB0T0ZGBGwdMbjoS",
-        "_score": 0.5012018,
+        "_id": "AVyNAz2qzwhPkRirs0SG",
+        "_score": 6.109191,
         "_source": {
           "regulation_id": "5",
           "regulation_short_code": "USCCL",
           "item_code": "0A985",
           "item_description": "Discharge type arms and devices to administer electric shock, for example, stun guns, shock batons, shock shields, electric cattle prods, immobilization guns and projectiles; except equipment used exclusively to treat or tranquilize animals, and except arms designed solely for signal, flare, or saluting use; and parts, n.e.s.",
-          "match_phrase": "TaserModel C2 stun gun",
-          "match_phrase_type": "2",
+          "match_phrase": "stun belt",
+          "match_phrase_type": "1",
           "region_restriction_type": "Generally Restricted",
           "region_restriction_sources": "110",
           "goods_codes_1": "85437090",
-          "goods_codes_2": "8543709099",
-          "goods_codes_3": null,
-          "goods": "85437090,8543709099"
+          "goods_codes_2": "8543709099"
         }
       }
     ]
@@ -600,24 +503,24 @@ Response :
     "failed": 0
   },
   "hits": {
-    "total": 1,
-    "max_score": 0.5446649,
+    "total": 23,
+    "max_score": 8.763638,
     "hits": [
       {
         "_index": "file",
         "_type": "file",
-        "_id": "AVyMf82Y0ZGBGwdMbjoW",
-        "_score": 0.5446649,
+        "_id": "AVyNAz2tzwhPkRirs0e1",
+        "_score": 8.763638,
         "_source": {
-		    "regulation_id": "0;7;9",
-		    "regulation_short_code": "WA;UKSECL;SSGCL",
-		    "item_code": "ML7.c",
-		    "item_description": "Chemical warfare (CW) binary precursors and key precursors",
-		    "match_phrase": "O,O-Diethyl phosphorodithioate",
-		    "match_phrase_type": "5",
-		    "region_restriction_type": "Generally Restricted",
-		    "goods_codes_3": "CAS 298‑06‑6"
-	    } 
+          "regulation_id": "0;7;9",
+          "regulation_short_code": "WA;UKSECL;SSGCL",
+          "item_code": "ML7.c",
+          "item_description": "Chemical warfare (CW) binary precursors and key precursors",
+          "match_phrase": "O,O-Diethyl phosphorothioate",
+          "match_phrase_type": "5",
+          "region_restriction_type": "Generally Restricted",
+          "goods_codes_3": "CAS 2465‑65‑8"
+        }
       }
     ]
   }
@@ -626,8 +529,7 @@ Response :
 11. To test toleration of plural
 ----------------------------------------------------------------------------
 HttpMethod : POST
-URL : http://localhost:9200/file/file/_search
-Payload :
+URL : http://localhost:9200/file/file/_searchPayload :
 {
 	"query": {
 		"bool": {
@@ -651,8 +553,7 @@ Payload :
 		}
 	}
 }
-
-Response :
+Response :
 {
   "took": 27,
   "timed_out": false,
@@ -662,7 +563,7 @@ Response :
     "failed": 0
   },
   "hits": {
-    "total": 1,
+    "total": 51,
     "max_score": 0.22550933,
     "hits": [
       {
@@ -731,7 +632,7 @@ Response payload :
     "failed": 0
   },
   "hits": {
-    "total": 1,
+    "total": 188,
     "max_score": 0.22550933,
     "hits": [
       {
@@ -814,7 +715,7 @@ Response payload :
     "failed": 0
   },
   "hits": {
-    "total": 2,
+    "total": 77,
     "max_score": 0.22275639,
     "hits": [
       {
@@ -907,4 +808,4 @@ Response payload :
     "max_score": null,
     "hits": []
   }
-}
+}}

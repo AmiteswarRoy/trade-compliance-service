@@ -13,6 +13,9 @@ public class ItemResponse {
 	public ItemResponse() {
 		// TODO Auto-generated constructor stub
 	}
+	public ItemResponse(String message) {
+		this.message = message;
+	}
 	
 	public ItemResponse(String message, int responseCode) {
 		this.message = message;
