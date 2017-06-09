@@ -1,0 +1,60 @@
+{
+    "dynamic" : "strict",
+    "_all" : {
+        "enabled" : false
+    },
+    "properties" : {
+        "regulation_id" : {
+            "type" : "text",
+            "index": "not_analyzed"
+        },
+        "regulation_short_code" : {
+            "type" : "text",
+            "index": "not_analyzed"
+        },
+		"item_code" : {
+            "type" : "text"
+        },
+		"item_description" : {
+            "type" : "text"
+        },
+		"match_phrase" : {
+            "type" : "text"
+        },
+		"match_phrase_type" : {
+            "type" : "text",
+            "index": "not_analyzed"
+        },
+		"region_restriction_type" : {
+            "type" : "text",
+            "index": "not_analyzed"
+        },
+		"region_restriction_names" : {
+            "type" : "text",
+            "index": "not_analyzed"
+        },
+		"region_restriction_iso_2" : {
+            "type" : "text",
+            "index": "not_analyzed"
+        },
+		"region_restriction_sources" : {
+            "type" : "text",
+            "index": "not_analyzed"
+        },
+		"goods_codes_1" : {
+            "type" : "text",
+            "index": "not_analyzed"
+        },
+		"goods_codes_2" : {
+            "type" : "text",
+            "index": "not_analyzed"
+        },
+		"goods_codes_3" : {
+            "type" : "text",
+            "index": "not_analyzed"
+        },
+		"goods" : {
+            "type" : "text"
+        }
+    }
+}

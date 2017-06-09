@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 
 import com.dowjones.tradecompliance.search.domain.ItemResponse;
 
+@SuppressWarnings("rawtypes")
 public class BuildResponseUtil {
 	
 	public static ResponseEntity<?> createSuccessfulResponse(String message) {
