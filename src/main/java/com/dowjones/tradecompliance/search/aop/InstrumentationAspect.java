@@ -1,13 +1,20 @@
 package com.dowjones.tradecompliance.search.aop;
 
+import org.apache.commons.lang3.time.StopWatch;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
 @Component
-//@Aspect
+@Aspect
 public class InstrumentationAspect {
-	/*private static Logger logger = LogManager.getLogger(InstrumentationAspect.class);
+	private static Logger logger = LogManager.getLogger(InstrumentationAspect.class);
 	
-	@Pointcut("@annotation(com.dowjones.rs.search.aop.EnableInstrumentation)")
+	@Pointcut("@annotation(com.dowjones.tradecompliance.search.aop.EnableInstrumentation)")
 	private void callInstrumentation() {}
 	
 	@Around("callInstrumentation())")
@@ -24,8 +31,8 @@ public class InstrumentationAspect {
         finally
         {
             sw.stop();
-            logger.info("Method: " + method + " - Time taken: " + sw.getTime() + " ms");
+            logger.debug("Method: " + method + " - Time taken: " + sw.getTime() + " ms");
         }
-	}*/
+	}
 
 }

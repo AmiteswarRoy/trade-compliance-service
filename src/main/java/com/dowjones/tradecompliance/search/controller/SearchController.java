@@ -79,6 +79,7 @@ public class SearchController {
 	 */
 	@PostMapping("/createItem")
 	@Consumes(MediaType.APPLICATION_JSON)
+	@EnableInstrumentation
 	public @ResponseBody ItemResponse createFile(@RequestBody TradeItem file) {
 		logger.debug("File Create Request");
 		try {
@@ -97,6 +98,7 @@ public class SearchController {
 	 */
 	@PostMapping("/createbulkItems")
 	@Consumes(MediaType.APPLICATION_JSON)
+	@EnableInstrumentation
 	public @ResponseBody ItemResponse createBulkFile(@RequestBody List<TradeItem> files) {
 		logger.debug("Bulk Item Create Request");
 		try {
@@ -116,6 +118,7 @@ public class SearchController {
 	 */
 	@DeleteMapping("/deleteItems")
 	@Consumes(MediaType.APPLICATION_JSON)
+	@EnableInstrumentation
 	public @ResponseBody ItemResponse deleteTradeItems() {
 		logger.debug("Delete All Items Request");
 		try {

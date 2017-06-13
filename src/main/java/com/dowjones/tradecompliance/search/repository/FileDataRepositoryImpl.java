@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
+import com.dowjones.tradecompliance.search.aop.EnableInstrumentation;
 import com.dowjones.tradecompliance.search.configuration.ElasticSearchConfig;
 import com.dowjones.tradecompliance.search.domain.FileData;
 import com.dowjones.tradecompliance.search.domain.FileQueryResults;
@@ -72,6 +73,7 @@ public class FileDataRepositoryImpl implements FileDataRepository{
 	 * @exception java.lang.Exception
 	 */
 	@Override
+	@EnableInstrumentation
 	public FileQueryResults searchFiles(FileSearchableData searchableData) throws Exception {
 		logger.debug("Inside search file method to connect to elastic search");
 		FileQueryResults results = new FileQueryResults();
@@ -103,6 +105,7 @@ public class FileDataRepositoryImpl implements FileDataRepository{
 	 * @exception java.lang.Exception
 	 */
 	@Override
+	@EnableInstrumentation
 	public ItemResponse createFile(TradeItem item) throws Exception {
 		ItemResponse response = new ItemResponse();
 		if (item != null) {
@@ -146,6 +149,7 @@ public class FileDataRepositoryImpl implements FileDataRepository{
 	 * 
 	 */
 	@Override
+	@EnableInstrumentation
 	public ItemResponse createBulkFiles(List<TradeItem> files) throws Exception {
 		ItemResponse response = new ItemResponse();
 		if (files != null) {
@@ -196,9 +200,10 @@ public class FileDataRepositoryImpl implements FileDataRepository{
 	 * @exception java.lang.Exception
 	 */
 	@Override
+	@EnableInstrumentation
 	public ItemResponse deleteAllItems() throws Exception{
 		ItemResponse response = new ItemResponse();
-		String query = ItemConstants.DELETE_ALL_QUERY;
+		String query = gson.toJson(ItemConstants.DELETE_ALL_QUERY);
 		
 		try{
 			DeleteByQuery deleteByQuery = new DeleteByQuery.Builder(query)

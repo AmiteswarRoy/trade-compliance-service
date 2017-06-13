@@ -35,6 +35,16 @@ Configuration:
             size: 5 MB
         DefaultRollOverStrategy:
           max: 30
+      - name: InstrumentationFile_Appender
+        fileName: ${log-path}/search-instrumentation.log
+        filePattern: ${log-path}/archive/search-instrumentation.log.%d{yyyy-MM-dd-hh-mm}.gz
+        PatternLayout:
+          pattern: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
+        Policies:
+          SizeBasedTriggeringPolicy:
+            size: 1 MB
+        DefaultRollOverStrategy:
+          max: 30
       
 
   Loggers:
@@ -55,4 +65,10 @@ Configuration:
               level: debug
             - ref: ErrorFile_Appender
               level: error
+        - name: com.dowjones.tradecompliance.search.aop.InstrumentationAspect
+          additivity: true
+          level: debug
+          AppenderRef:
+            - ref: InstrumentationFile_Appender
+              level: debug
         

@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import com.dowjones.tradecompliance.search.aop.EnableInstrumentation;
 import com.dowjones.tradecompliance.search.domain.FileQueryResults;
 import com.dowjones.tradecompliance.search.domain.FileSearchableData;
 import com.dowjones.tradecompliance.search.domain.ItemResponse;
@@ -38,7 +37,6 @@ public class FileSearchService implements FileSearch {
 	 * @exception java.lang.Exception
 	 * */
 	@Override
-	@EnableInstrumentation
 	public FileQueryResults searchFiles(FileSearchableData searchableData) throws Exception {
 		logger.debug("Inside file search service method");
 		FileQueryResults results = repository.searchFiles(searchableData);
