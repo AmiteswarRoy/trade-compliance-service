@@ -1,14 +1,16 @@
 package com.dowjones.tradecompliance.search.domain;
 
-import java.io.Serializable;
 import java.util.List;
+
+import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
+@JsonSerialize
 public class SearchCriteria {
-	
-private List<String> goods;
+
+	@NotEmpty(message="Input cannot be empty")
+	private List<String> goods;
 	
 	public List<String> getGoods() {
 		return goods;

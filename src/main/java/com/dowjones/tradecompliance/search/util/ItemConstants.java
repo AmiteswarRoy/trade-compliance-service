@@ -29,4 +29,6 @@ public class ItemConstants {
 												+ "}";
 	public static final Object DELETE_SUCCESS = "trade items successfully deleted from Index";
 	public static final String DELETE_FAILURE = "Failed to delete items from Index";
+	public static final Integer BAD_REQUEST = 400;
+	
 }

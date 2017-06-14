@@ -1,29 +1,56 @@
 package com.dowjones.tradecompliance.search.domain;
 
-import org.springframework.stereotype.Component;
+import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.springframework.stereotype.Component;
 /**
  * @Description TradeItem domain POJO
  * @author Infosys
  *
  */
-@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
 @Component
 public class TradeItem {
+	
+	@NotNull(message="regulation_id is required field")
 	private String regulation_id;
+	
+	@NotNull(message="regulation_short_code is required field")
 	private String regulation_short_code;
+	
+	@NotNull(message="item_code is required field")
 	private String item_code;
+	
+	@NotNull(message="item_description is required field")
 	private String item_description;
+	
+	@NotNull(message="match_phrase is required field")
 	private String match_phrase;
+	
+	@NotNull(message="match_phrase_type is required field")
 	private String match_phrase_type;
+	
+	@NotNull(message="region_restriction_type is required field")
 	private String region_restriction_type;
+	
+	@NotNull(message="region_restriction_names is required field")
 	private String region_restriction_names;
+	
+	@NotNull(message="region_restriction_iso_2 is required field")
 	private String region_restriction_iso_2;
+	
+	@NotNull(message="region_restriction_sources is required field")
 	private String region_restriction_sources;
+	
+	@NotNull(message="goods_codes_1 is required field")
 	private String goods_codes_1;
+	
+	@NotNull(message="goods_codes_2 is required field")
 	private String goods_codes_2;
+	
+	@NotNull(message="goods_codes_3 is required field")
 	private String goods_codes_3;
+	
+	@NotNull(message="goods is required field")
 	private String goods;
 
 	public TradeItem() { }
