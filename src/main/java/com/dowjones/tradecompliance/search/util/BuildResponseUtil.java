@@ -21,12 +21,11 @@ public class BuildResponseUtil {
 	}
 	
 	public static ResponseEntity<?> createSuccessfulResponse(ItemResponse response, HttpStatus status) {
-		//String responseJson = gson.toJson(response);
 		return new ResponseEntity(response, status);
 	}
 	
-	public static ResponseEntity<?> createErrorResponse(int errorCode, String errorMessage, HttpStatus status) {
-		return new ResponseEntity(new ItemResponse(errorMessage, errorCode), status);
+	public static ResponseEntity<?> createErrorResponse( String errorMessage, HttpStatus status) {
+		return new ResponseEntity(new ItemResponse(errorMessage), status);
 	}
 	
 }

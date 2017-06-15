@@ -70,7 +70,7 @@ public class SearchController {
 			Errors errors) {
 		// Return error response, if there are any errors in the input request
 		if (errors.hasErrors()) {
-			return (ResponseEntity<FileQueryResults>) BuildResponseUtil.createErrorResponse(ItemConstants.BAD_REQUEST,
+			return (ResponseEntity<FileQueryResults>) BuildResponseUtil.createErrorResponse(
 					errors.getAllErrors().stream().map(x -> x.getDefaultMessage()).collect(Collectors.joining(",")),
 					HttpStatus.BAD_REQUEST);
 		}
@@ -81,7 +81,7 @@ public class SearchController {
 			return (ResponseEntity<FileQueryResults>) BuildResponseUtil.createSuccessfulResponse(results);
 		} catch (Exception ex) {
 			logger.error("File search failed " + ex);
-			return (ResponseEntity<FileQueryResults>) BuildResponseUtil.createErrorResponse(500, ex.getMessage(),
+			return (ResponseEntity<FileQueryResults>) BuildResponseUtil.createErrorResponse(ItemConstants.SERVER_DOWN,
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -99,7 +99,6 @@ public class SearchController {
 		// Return error response, if there are any errors in the input request
 		if (errors.hasErrors()) {
 			ItemResponse response = new ItemResponse();
-			response.setResponseCode(ItemConstants.BAD_REQUEST);
 			response.setMessage("Please check input request and correct -"
 					+ errors.getAllErrors().stream().map(x -> x.getDefaultMessage()).collect(Collectors.joining(",")));
 			return response;
@@ -127,7 +126,6 @@ public class SearchController {
 		// Return error response, if there are any errors in the input request
 		if (errors.hasErrors()) {
 			ItemResponse response = new ItemResponse();
-			response.setResponseCode(ItemConstants.BAD_REQUEST);
 			response.setMessage("Please check input request and correct -"
 					+ errors.getAllErrors().stream().map(x -> x.getDefaultMessage()).collect(Collectors.joining(",")));
 			return response;

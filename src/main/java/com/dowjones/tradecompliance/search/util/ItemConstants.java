@@ -31,4 +31,6 @@ public class ItemConstants {
 	public static final String DELETE_FAILURE = "Failed to delete items from Index";
 	public static final Integer BAD_REQUEST = 400;
 	
+	public static final String INVALID_INPUT = "Please provide valid input. Search parameters cannot be empty!";
+	public static final String SERVER_DOWN = "The application is down. Please try after sometime";
 }

@@ -4,12 +4,13 @@ import java.util.List;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
+import com.dowjones.tradecompliance.search.util.ItemConstants;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @JsonSerialize
 public class SearchCriteria {
 
-	@NotEmpty(message="Input cannot be empty")
+	@NotEmpty(message=ItemConstants.INVALID_INPUT)
 	private List<String> goods;
 	
 	public List<String> getGoods() {

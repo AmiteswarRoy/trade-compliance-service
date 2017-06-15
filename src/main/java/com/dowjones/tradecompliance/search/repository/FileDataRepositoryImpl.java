@@ -89,7 +89,6 @@ public class FileDataRepositoryImpl implements FileDataRepository{
 		
 		if(StringUtils.isEmpty(searchResult.getErrorMessage()) && StringUtils.isBlank(searchResult.getErrorMessage())) {
 			results = populateSearchResults(searchResult);
-			results.setResponseCode(null);
 			
 		} else { 
 			logger.error("File Search failed : "+searchResult.getErrorMessage());
@@ -119,18 +118,15 @@ public class FileDataRepositoryImpl implements FileDataRepository{
 				logger.debug("Index "+index.getURI());
 				JestResult result = client.execute(index);
 				if (result.isSucceeded()) {
-					response.setResponseCode(result.getResponseCode());
 					response.setMessage(ItemConstants.ITEM_CREATION_SUCCESS);
 					return response;
 				}else{
-					response.setResponseCode(result.getResponseCode());
 					response.setMessage(ItemConstants.ITEM_CREATION_FAILURE);
 					return null;
 				}
 			}catch(Exception e){
 				logger.error("Error while creating Trade Item in Elastic - "+e);
 				response.setMessage(ItemConstants.ITEM_CREATION_ERROR +" "+e.getMessage());
-				response.setResponseCode(ItemConstants.ERRORCODE);
 				return response;
 			}
 			
@@ -172,18 +168,15 @@ public class FileDataRepositoryImpl implements FileDataRepository{
 							.addAction(indexToInsert).build();
 				JestResult result = client.execute(bulk);
 				if (result.isSucceeded()) {
-					response.setResponseCode(result.getResponseCode());
 					response.setMessage(ItemConstants.ITEM_CREATION_SUCCESS);
 					return response;
 				}else{
-					response.setResponseCode(result.getResponseCode());
 					response.setMessage(ItemConstants.ITEM_CREATION_FAILURE);
 					return null;
 				}
 			}catch(Exception e){
 				logger.error("Error while creating Bulk Trade Items in Elastic - "+e);
 				response.setMessage(ItemConstants.ITEM_CREATION_ERROR+" " +e.getMessage());
-				response.setResponseCode(ItemConstants.ERRORCODE);
 				return response;
 			}
 			
@@ -214,18 +207,15 @@ public class FileDataRepositoryImpl implements FileDataRepository{
 			logger.debug("Status - "+result.isSucceeded());
 			logger.info("Deleted count - "+result.getValue("deleted"));
 			if(result.isSucceeded()){
-				response.setResponseCode(result.getResponseCode());
 				response.setMessage(result.getValue("deleted") + " "+ ItemConstants.DELETE_SUCCESS);
 				return response;
 			}else{
-				response.setResponseCode(result.getResponseCode());
 				response.setMessage(ItemConstants.DELETE_FAILURE);
 				return response;
 			}
 			
 		}catch(Exception e){
 			logger.error("Error while deleting items"+e);
-			response.setResponseCode(ItemConstants.ERRORCODE);
 			response.setMessage(ItemConstants.DELETE_FAILURE +" " +e.getMessage());
 			return response;
 		}
