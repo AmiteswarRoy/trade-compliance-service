@@ -26,32 +26,21 @@ public class TradeItem {
 	@NotNull(message="match_phrase is required field")
 	private String match_phrase;
 	
-	@NotNull(message="match_phrase_type is required field")
-	private String match_phrase_type;
-	
 	@NotNull(message="region_restriction_type is required field")
 	private String region_restriction_type;
 	
-	@NotNull(message="region_restriction_names is required field")
+	private String match_phrase_type;
 	private String region_restriction_names;
-	
-	@NotNull(message="region_restriction_iso_2 is required field")
 	private String region_restriction_iso_2;
-	
-	@NotNull(message="region_restriction_sources is required field")
 	private String region_restriction_sources;
-	
-	@NotNull(message="goods_codes_1 is required field")
 	private String goods_codes_1;
-	
-	@NotNull(message="goods_codes_2 is required field")
 	private String goods_codes_2;
-	
-	@NotNull(message="goods_codes_3 is required field")
 	private String goods_codes_3;
-	
-	@NotNull(message="goods is required field")
-	private String goods;
+	private String tc_goods_codes;
+	private String dow_jones_id;
+	private String synonyms;
+	private String additional_notes;
+	private String feedback_score;
 
 	public TradeItem() { }
 	
@@ -158,12 +147,45 @@ public class TradeItem {
 	public void setGoods_codes_3(String goods_codes_3) {
 		this.goods_codes_3 = goods_codes_3;
 	}
-	
-	public String getGoods() {
-		return goods;
+
+	public String getTc_goods_codes() {
+		return tc_goods_codes;
+	}
+
+	public void setTc_goods_codes(String tc_goods_codes) {
+		this.tc_goods_codes = tc_goods_codes;
+	}
+
+	public String getDow_jones_id() {
+		return dow_jones_id;
+	}
+
+	public void setDow_jones_id(String dow_jones_id) {
+		this.dow_jones_id = dow_jones_id;
+	}
+
+	public String getSynonyms() {
+		return synonyms;
+	}
+
+	public void setSynonyms(String synonyms) {
+		this.synonyms = synonyms;
+	}
+
+	public String getAdditional_notes() {
+		return additional_notes;
+	}
+
+	public void setAdditional_notes(String additional_notes) {
+		this.additional_notes = additional_notes;
+	}
+
+	public String getFeedback_score() {
+		return feedback_score;
+	}
+
+	public void setFeedback_score(String feedback_score) {
+		this.feedback_score = feedback_score;
 	}
 	
-	public void setGoods(String goods) {
-		this.goods = goods;
-	}
 }

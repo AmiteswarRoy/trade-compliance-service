@@ -21,7 +21,7 @@ public class ItemConstants {
 	public static final String ITEM_CODE = "item_code";
 	public static final String ITEM_DESCIPTION = "item_description";
 	public static final String MATCH_PHRASE = "match_phrase";
-	public static final String GOODS_CODES = "goods";
+	public static final String TC_GOODS_CODES = "tc_goods_codes";
 	
 	public static final String DELETE_ALL_QUERY = "{\"query\":{"
 													+ "\"match_all\": {}"

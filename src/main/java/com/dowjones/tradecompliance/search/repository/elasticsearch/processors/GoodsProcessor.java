@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -25,7 +26,7 @@ import com.dowjones.tradecompliance.search.util.ItemConstants;
 @Qualifier("FileSearchCriteria")
 public class GoodsProcessor implements CriteriaProcessor<SearchCriteria> {
 	private final String[] fieldNames = { ItemConstants.ITEM_CODE, ItemConstants.ITEM_DESCIPTION,
-			ItemConstants.MATCH_PHRASE, ItemConstants.GOODS_CODES };
+			ItemConstants.MATCH_PHRASE, ItemConstants.TC_GOODS_CODES };
 	
 	/**
 	 * @Description Validate criteria against null and blank

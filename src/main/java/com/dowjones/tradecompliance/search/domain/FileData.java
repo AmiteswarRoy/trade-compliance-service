@@ -10,7 +10,7 @@ public class FileData {
 	private String item_code;
 	private String item_description;
 	private String match_phrase;
-	private String goods;
+	private String tc_goods_codes;
 	
 	public String getItem_code() {
 		return item_code;
@@ -30,11 +30,11 @@ public class FileData {
 	public void setMatch_phrase(String match_phrase) {
 		this.match_phrase = match_phrase;
 	}
-	public String getGoods() {
-		return goods;
+	public String getTc_goods_codes() {
+		return tc_goods_codes;
 	}
-	public void setGoods(String goods) {
-		this.goods = goods;
+	public void setTc_goods_codes(String tc_goods_codes) {
+		this.tc_goods_codes = tc_goods_codes;
 	}
 	
 }
