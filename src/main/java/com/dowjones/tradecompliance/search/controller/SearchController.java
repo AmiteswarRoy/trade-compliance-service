@@ -63,7 +63,7 @@ public class SearchController {
 	 * @return FileQueryResults json
 	 */
 	@SuppressWarnings("unchecked")
-	@PostMapping("/searchResult")
+	@PostMapping("/result")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@EnableInstrumentation
 	public ResponseEntity<FileQueryResults> searchFiles(@Valid @RequestBody FileSearchableData searchableData,
