@@ -57,9 +57,10 @@ public class FileDataRepositoryImpl implements FileDataRepository{
 		gson = new GsonBuilder().create();
 		JestClientFactory factory = new JestClientFactory();
 		factory.setHttpClientConfig(new HttpClientConfig.Builder(config.getServerUri())
+				.readTimeout(config.getReadTimeOut())
+				.connTimeout(config.getConnectTimeOut())
 				.multiThreaded(true)
 				.gson(gson)
-				.readTimeout(config.getReadTimeOut())
 				.build());
 		client = factory.getObject();
 		
