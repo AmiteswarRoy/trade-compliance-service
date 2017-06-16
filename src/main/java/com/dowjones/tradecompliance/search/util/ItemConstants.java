@@ -21,7 +21,12 @@ public class ItemConstants {
 	public static final String ITEM_CODE = "item_code";
 	public static final String ITEM_DESCIPTION = "item_description";
 	public static final String MATCH_PHRASE = "match_phrase";
-	public static final String TC_GOODS_CODES = "tc_goods_codes";
+	public static final String GOODS_CODES_1 = "goods_codes_1";
+	public static final String GOODS_CODES_2 = "goods_codes_2";
+	public static final String GOODS_CODES_3 = "goods_codes_3";
+	
+	public static final String[] SEARCHABLE_FIELDS = { ItemConstants.ITEM_CODE, ItemConstants.ITEM_DESCIPTION,
+			ItemConstants.MATCH_PHRASE, ItemConstants.GOODS_CODES_1, ItemConstants.GOODS_CODES_2, ItemConstants.GOODS_CODES_3 };
 	
 	public static final String DELETE_ALL_QUERY = "{\"query\":{"
 													+ "\"match_all\": {}"

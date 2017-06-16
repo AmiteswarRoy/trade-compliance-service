@@ -35,10 +35,20 @@ public class ConversionService {
 		else
 			fileData.setMatch_phrase(null);
 		
-		if(StringUtils.isNotEmpty(tradeItem.getTc_goods_codes()))
-			fileData.setTc_goods_codes(tradeItem.getTc_goods_codes());
+		if(StringUtils.isNotEmpty(tradeItem.getGoods_codes_1()))
+			fileData.setGoods_codes_1(tradeItem.getGoods_codes_1());
 		else
-			fileData.setTc_goods_codes(null);
+			fileData.setGoods_codes_1(null);
+		
+		if(StringUtils.isNotEmpty(tradeItem.getGoods_codes_2()))
+			fileData.setGoods_codes_2(tradeItem.getGoods_codes_2());
+		else
+			fileData.setGoods_codes_2(null);
+		
+		if(StringUtils.isNotEmpty(tradeItem.getGoods_codes_3()))
+			fileData.setGoods_codes_3(tradeItem.getGoods_codes_3());
+		else
+			fileData.setGoods_codes_3(null);
 		
 		return fileData;
 	}

@@ -36,7 +36,6 @@ public class TradeItem {
 	private String goods_codes_1;
 	private String goods_codes_2;
 	private String goods_codes_3;
-	private String tc_goods_codes;
 	private String dow_jones_id;
 	private String synonyms;
 	private String additional_notes;
@@ -146,14 +145,6 @@ public class TradeItem {
 	
 	public void setGoods_codes_3(String goods_codes_3) {
 		this.goods_codes_3 = goods_codes_3;
-	}
-
-	public String getTc_goods_codes() {
-		return tc_goods_codes;
-	}
-
-	public void setTc_goods_codes(String tc_goods_codes) {
-		this.tc_goods_codes = tc_goods_codes;
 	}
 
 	public String getDow_jones_id() {

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import com.dowjones.tradecompliance.search.configuration.ElasticSearchConfig;
 import com.dowjones.tradecompliance.search.domain.FileSearchableData;
 import com.dowjones.tradecompliance.search.domain.SearchCriteria;
+import com.dowjones.tradecompliance.search.util.ItemConstants;
 
 /**
  * @author swathi_c05
@@ -90,10 +91,7 @@ public class EsFileQueryBuilder {
 	private SearchSourceBuilder buildFileSearchQueryFromComponents(QueryComponents components) throws Exception {
 		SearchSourceBuilder search = new SearchSourceBuilder();
 
-		search.fetchSource(
-				(components.getSources().size() > 0
-						? components.getSources().toArray(new String[components.getSources().size()]) : null),
-				null);
+		search.fetchSource(ItemConstants.SEARCHABLE_FIELDS, null);
 		search.query(components.getBoolQuery());
 		search.size(config.getMaxResultsToFetch());
 

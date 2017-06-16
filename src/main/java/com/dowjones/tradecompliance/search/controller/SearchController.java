@@ -38,7 +38,7 @@ import com.dowjones.tradecompliance.search.util.ItemConstants;
  *
  */
 @RestController
-@RequestMapping("/search/v1")
+@RequestMapping("/tradecompliance/v1")
 public class SearchController {
 	private static Logger logger = LogManager.getLogger(SearchController.class);
 
@@ -63,7 +63,7 @@ public class SearchController {
 	 * @return FileQueryResults json
 	 */
 	@SuppressWarnings("unchecked")
-	@PostMapping("/result")
+	@PostMapping("/search")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@EnableInstrumentation
 	public ResponseEntity<FileQueryResults> searchFiles(@Valid @RequestBody FileSearchableData searchableData,
@@ -119,7 +119,7 @@ public class SearchController {
 	 *            of trade items in json format
 	 * @return Json Response with creation status
 	 */
-	@PostMapping("/createbulkItems")
+	@PostMapping("/upload")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@EnableInstrumentation
 	public @ResponseBody ItemResponse createBulkFile(@RequestBody @Valid TradeItemList files, Errors errors) {
@@ -150,7 +150,7 @@ public class SearchController {
 	 * @param
 	 * @return Json Response with creation status
 	 */
-	@DeleteMapping("/deleteItems")
+	@DeleteMapping("/delete")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@EnableInstrumentation
 	public @ResponseBody ItemResponse deleteTradeItems() {

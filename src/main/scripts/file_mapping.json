@@ -6,11 +6,11 @@
     "properties" : {
         "regulation_id" : {
             "type" : "text",
-            "index": "not_analyzed"
+            "index": "no"
         },
         "regulation_short_code" : {
             "type" : "text",
-            "index": "not_analyzed"
+            "index": "no"
         },
 		"item_code" : {
             "type" : "text"
@@ -23,54 +23,48 @@
         },
 		"match_phrase_type" : {
             "type" : "text",
-            "index": "not_analyzed"
+            "index": "no"
         },
 		"region_restriction_type" : {
             "type" : "text",
-            "index": "not_analyzed"
+            "index": "no"
+        },
+		"dow_jones_id" : {
+            "type" : "text",
+            "index": "no"
+        },
+		"synonyms" : {
+            "type" : "text",
+            "index": "no"
         },
 		"region_restriction_names" : {
             "type" : "text",
-            "index": "not_analyzed"
+            "index": "no"
         },
 		"region_restriction_iso_2" : {
             "type" : "text",
-            "index": "not_analyzed"
+            "index": "no"
         },
 		"region_restriction_sources" : {
             "type" : "text",
-            "index": "not_analyzed"
+            "index": "no"
+        },
+		"additional_notes" : {
+            "type" : "text",
+            "index": "no"
         },
 		"goods_codes_1" : {
-            "type" : "text",
-            "index": "not_analyzed"
+            "type" : "text"
         },
 		"goods_codes_2" : {
-            "type" : "text",
-            "index": "not_analyzed"
-        },
-        "dow_jones_id" : {
-            "type" : "string",
-            "index": "not_analyzed"
-        },
-        "synonyms" : {
-            "type" : "string",
-            "index": "not_analyzed"
-        },
-        "additional_notes" : {
-            "type" : "string",
-            "index": "not_analyzed"
+            "type" : "text"
         },
 		"goods_codes_3" : {
-            "type" : "text",
-            "index": "not_analyzed"
-        },
-        "feedback_score" : {
-            "type" : "string",
-            "index": "not_analyzed"
-        },
-		"tc_goods_codes" : {
             "type" : "text"
+        },
+		"feedback_score" : {
+            "type" : "text",
+            "index": "no"
         }
     }
 }
