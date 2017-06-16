@@ -59,9 +59,9 @@ public class FileDataRepositoryImpl implements FileDataRepository{
 		factory.setHttpClientConfig(new HttpClientConfig.Builder(config.getServerUri())
 				.multiThreaded(true)
 				.gson(gson)
+				.readTimeout(config.getReadTimeOut())
 				.build());
 		client = factory.getObject();
-		
 		
 	}
 

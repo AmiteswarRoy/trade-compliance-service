@@ -132,8 +132,8 @@ public class SearchController {
 					HttpStatus.BAD_REQUEST);
 		}
 		logger.debug("Bulk Item Create Request");
-		if (null != files) {
-			if(files.getList().size() > 0){
+		if (null != files && files.getList().size() > 0 ) {
+			if(null != files.getList().get(0)){
 				try {
 					ItemResponse response = fileSearch.createBulkFiles(files.getList());
 					return (ResponseEntity<ItemResponse>) BuildResponseUtil.createSuccessfulResponse(response);
@@ -145,13 +145,16 @@ public class SearchController {
 			}else{
 				return (ResponseEntity<ItemResponse>) BuildResponseUtil.createErrorResponse(ItemConstants.NO_ITEMS,
 						HttpStatus.BAD_REQUEST);
-				
-			}
-			
-		} 
-		return null;
-	}
 
+			}
+
+		}else{
+			return (ResponseEntity<ItemResponse>) BuildResponseUtil.createErrorResponse(ItemConstants.NO_ITEMS,
+					HttpStatus.BAD_REQUEST);
+		} 
+
+	} 
+	
 	/**
 	 * @Description - To delete all trade items in elastic search
 	 * @param
