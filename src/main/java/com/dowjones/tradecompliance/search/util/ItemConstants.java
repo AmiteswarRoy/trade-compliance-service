@@ -7,9 +7,7 @@ package com.dowjones.tradecompliance.search.util;
  *
  */
 public class ItemConstants {
-	private ItemConstants(){
-		
-	}
+	
 	public static final String ITEM_CREATION_SUCCESS = "Item created successfully.";
 	public static final String SUCCESS = "SUCCESS";
 	public static final String ITEM_CREATION_FAILURE = "Iteam creation failed.";
@@ -25,8 +23,7 @@ public class ItemConstants {
 	public static final String GOODS_CODES_2 = "goods_codes_2";
 	public static final String GOODS_CODES_3 = "goods_codes_3";
 	
-	public static final String[] SEARCHABLE_FIELDS = { ItemConstants.ITEM_CODE, ItemConstants.ITEM_DESCIPTION,
-			ItemConstants.MATCH_PHRASE, ItemConstants.GOODS_CODES_1, ItemConstants.GOODS_CODES_2, ItemConstants.GOODS_CODES_3 };
+	public static final String[] SEARCHABLE_FIELDS = { ITEM_CODE, ITEM_DESCIPTION, MATCH_PHRASE, GOODS_CODES_1, GOODS_CODES_2, GOODS_CODES_3 };
 	
 	public static final String DELETE_ALL_QUERY = "{\"query\":{"
 													+ "\"match_all\": {}"
@@ -38,4 +35,5 @@ public class ItemConstants {
 	
 	public static final String INVALID_INPUT = "Please provide valid input. Search parameters cannot be empty!";
 	public static final String SERVER_DOWN = "The application is down. Please try after sometime";
+	public static final String NO_ITEMS = "There are no items in input request. Please provide items.";
 }

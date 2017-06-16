@@ -92,24 +92,25 @@ public class SearchController {
 	 *            json
 	 * @return Json Response with creation status
 	 */
+	@SuppressWarnings("unchecked")
 	@PostMapping("/createItem")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@EnableInstrumentation
-	public @ResponseBody ItemResponse createFile(@Valid @RequestBody TradeItem file, Errors errors) {
+	public @ResponseBody ResponseEntity<ItemResponse> createFile(@Valid @RequestBody TradeItem file, Errors errors) {
 		// Return error response, if there are any errors in the input request
 		if (errors.hasErrors()) {
-			ItemResponse response = new ItemResponse();
-			response.setMessage("Please check input request and correct -"
-					+ errors.getAllErrors().stream().map(x -> x.getDefaultMessage()).collect(Collectors.joining(",")));
-			return response;
+			return (ResponseEntity<ItemResponse>) BuildResponseUtil.createErrorResponse(
+					errors.getAllErrors().stream().map(x -> x.getDefaultMessage()).collect(Collectors.joining(",")),
+					HttpStatus.BAD_REQUEST);
 		}
 		logger.debug("File Create Request");
 		try {
 			ItemResponse response = fileSearch.createFile(file);
-			return response;
+			return (ResponseEntity<ItemResponse>) BuildResponseUtil.createSuccessfulResponse(response);
 		} catch (Exception ex) {
 			logger.error("Item creation failure " + ex);
-			return null;
+			return (ResponseEntity<ItemResponse>) BuildResponseUtil.createErrorResponse(ItemConstants.ITEM_CREATION_FAILURE,
+					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -119,30 +120,36 @@ public class SearchController {
 	 *            of trade items in json format
 	 * @return Json Response with creation status
 	 */
+	@SuppressWarnings("unchecked")
 	@PostMapping("/upload")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@EnableInstrumentation
-	public @ResponseBody ItemResponse createBulkFile(@RequestBody @Valid TradeItemList files, Errors errors) {
+	public @ResponseBody ResponseEntity<ItemResponse> createBulkFile(@RequestBody @Valid TradeItemList files, Errors errors) {
 		// Return error response, if there are any errors in the input request
 		if (errors.hasErrors()) {
-			ItemResponse response = new ItemResponse();
-			response.setMessage("Please check input request and correct -"
-					+ errors.getAllErrors().stream().map(x -> x.getDefaultMessage()).collect(Collectors.joining(",")));
-			return response;
+			return (ResponseEntity<ItemResponse>) BuildResponseUtil.createErrorResponse(
+					errors.getAllErrors().stream().map(x -> x.getDefaultMessage()).collect(Collectors.joining(",")),
+					HttpStatus.BAD_REQUEST);
 		}
 		logger.debug("Bulk Item Create Request");
 		if (null != files) {
-			try {
-				ItemResponse response = fileSearch.createBulkFiles(files.getList());
-				return response;
-			} catch (Exception ex) {
-				logger.error("Error while creating bulk items" + ex);
-				return null;
+			if(files.getList().size() > 0){
+				try {
+					ItemResponse response = fileSearch.createBulkFiles(files.getList());
+					return (ResponseEntity<ItemResponse>) BuildResponseUtil.createSuccessfulResponse(response);
+				} catch (Exception ex) {
+					logger.error("Error while creating bulk items" + ex);
+					return (ResponseEntity<ItemResponse>) BuildResponseUtil.createErrorResponse(ItemConstants.ITEM_CREATION_FAILURE,
+							HttpStatus.INTERNAL_SERVER_ERROR);
+				}
+			}else{
+				return (ResponseEntity<ItemResponse>) BuildResponseUtil.createErrorResponse(ItemConstants.NO_ITEMS,
+						HttpStatus.BAD_REQUEST);
+				
 			}
-		} else {
-			return null;
-		}
-
+			
+		} 
+		return null;
 	}
 
 	/**
@@ -150,17 +157,19 @@ public class SearchController {
 	 * @param
 	 * @return Json Response with creation status
 	 */
+	@SuppressWarnings("unchecked")
 	@DeleteMapping("/delete")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@EnableInstrumentation
-	public @ResponseBody ItemResponse deleteTradeItems() {
+	public @ResponseBody ResponseEntity<ItemResponse> deleteTradeItems() {
 		logger.debug("Delete All Items Request");
 		try {
 			ItemResponse response = fileSearch.deleteAllItems();
-			return response;
+			return (ResponseEntity<ItemResponse>) BuildResponseUtil.createSuccessfulResponse(response);
 		} catch (Exception ex) {
 			logger.error("Error while deleting trade items" + ex);
-			return null;
+			return (ResponseEntity<ItemResponse>) BuildResponseUtil.createErrorResponse(ItemConstants.DELETE_FAILURE,
+					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 }
