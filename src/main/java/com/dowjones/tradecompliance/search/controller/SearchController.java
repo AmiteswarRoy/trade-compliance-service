@@ -106,10 +106,15 @@ public class SearchController {
 		logger.debug("File Create Request");
 		try {
 			ItemResponse response = fileSearch.createFile(file);
-			return (ResponseEntity<ItemResponse>) BuildResponseUtil.createSuccessfulResponse(response);
+			if(null != response){
+				return (ResponseEntity<ItemResponse>) BuildResponseUtil.createSuccessfulResponse(response);
+			}else{
+				return (ResponseEntity<ItemResponse>) BuildResponseUtil.createErrorResponse(ItemConstants.ITEM_CREATION_FAILURE, HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+			
 		} catch (Exception ex) {
 			logger.error("Item creation failure " + ex);
-			return (ResponseEntity<ItemResponse>) BuildResponseUtil.createErrorResponse(ItemConstants.ITEM_CREATION_FAILURE,
+			return (ResponseEntity<ItemResponse>) BuildResponseUtil.createErrorResponse(ItemConstants.ITEM_CREATION_FAILURE +" due to "+ex,
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -136,10 +141,15 @@ public class SearchController {
 			if(null != files.getList().get(0)){
 				try {
 					ItemResponse response = fileSearch.createBulkFiles(files.getList());
-					return (ResponseEntity<ItemResponse>) BuildResponseUtil.createSuccessfulResponse(response);
+					if(null != response){
+						return (ResponseEntity<ItemResponse>) BuildResponseUtil.createSuccessfulResponse(response);
+					}else{
+						return (ResponseEntity<ItemResponse>) BuildResponseUtil.createErrorResponse(ItemConstants.ITEM_CREATION_FAILURE, HttpStatus.INTERNAL_SERVER_ERROR);
+					}
+					
 				} catch (Exception ex) {
 					logger.error("Error while creating bulk items" + ex);
-					return (ResponseEntity<ItemResponse>) BuildResponseUtil.createErrorResponse(ItemConstants.ITEM_CREATION_FAILURE,
+					return (ResponseEntity<ItemResponse>) BuildResponseUtil.createErrorResponse(ItemConstants.ITEM_CREATION_FAILURE+" due to "+ex,
 							HttpStatus.INTERNAL_SERVER_ERROR);
 				}
 			}else{
@@ -168,10 +178,16 @@ public class SearchController {
 		logger.debug("Delete All Items Request");
 		try {
 			ItemResponse response = fileSearch.deleteAllItems();
-			return (ResponseEntity<ItemResponse>) BuildResponseUtil.createSuccessfulResponse(response);
+			if(null != response){
+				return (ResponseEntity<ItemResponse>) BuildResponseUtil.createSuccessfulResponse(response);
+			}else{
+				return (ResponseEntity<ItemResponse>) BuildResponseUtil.createErrorResponse(ItemConstants.DELETE_FAILURE,
+						HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+			
 		} catch (Exception ex) {
 			logger.error("Error while deleting trade items" + ex);
-			return (ResponseEntity<ItemResponse>) BuildResponseUtil.createErrorResponse(ItemConstants.DELETE_FAILURE,
+			return (ResponseEntity<ItemResponse>) BuildResponseUtil.createErrorResponse(ItemConstants.DELETE_FAILURE+" due to "+ex,
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

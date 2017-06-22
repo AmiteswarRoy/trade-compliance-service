@@ -6,6 +6,8 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
@@ -18,6 +20,7 @@ import com.dowjones.tradecompliance.search.domain.FileSearchableData;
 import com.dowjones.tradecompliance.search.domain.ItemResponse;
 import com.dowjones.tradecompliance.search.domain.TradeItem;
 import com.dowjones.tradecompliance.search.repository.elasticsearch.EsFileQueryBuilder;
+import com.dowjones.tradecompliance.search.repository.elasticsearch.QueryComponents;
 import com.dowjones.tradecompliance.search.util.ConversionService;
 import com.dowjones.tradecompliance.search.util.ItemConstants;
 import com.google.gson.Gson;
@@ -31,6 +34,7 @@ import io.searchbox.core.Bulk;
 import io.searchbox.core.DeleteByQuery;
 import io.searchbox.core.Index;
 import io.searchbox.core.Search;
+import io.searchbox.core.Search.Builder;
 import io.searchbox.core.SearchResult;
 
 /**
@@ -122,13 +126,13 @@ public class FileDataRepositoryImpl implements FileDataRepository{
 					response.setMessage(ItemConstants.ITEM_CREATION_SUCCESS);
 					return response;
 				}else{
-					response.setMessage(ItemConstants.ITEM_CREATION_FAILURE);
+					logger.error("Error while creating item");
 					return null;
 				}
 			}catch(Exception e){
 				logger.error("Error while creating Trade Item in Elastic - "+e);
 				response.setMessage(ItemConstants.ITEM_CREATION_ERROR +" "+e.getMessage());
-				return response;
+				throw e;
 			}
 			
 		} else {
@@ -172,13 +176,13 @@ public class FileDataRepositoryImpl implements FileDataRepository{
 					response.setMessage(ItemConstants.ITEM_CREATION_SUCCESS);
 					return response;
 				}else{
-					response.setMessage(ItemConstants.ITEM_CREATION_FAILURE);
+					logger.error("Error while creating Bulk Trade Items");
 					return null;
 				}
 			}catch(Exception e){
 				logger.error("Error while creating Bulk Trade Items in Elastic - "+e);
-				response.setMessage(ItemConstants.ITEM_CREATION_ERROR+" " +e.getMessage());
-				return response;
+				//response.setMessage(ItemConstants.ITEM_CREATION_ERROR+" " +e.getMessage());
+				throw e;
 			}
 			
 		} else {
@@ -211,14 +215,14 @@ public class FileDataRepositoryImpl implements FileDataRepository{
 				response.setMessage(result.getValue("deleted") + " "+ ItemConstants.DELETE_SUCCESS);
 				return response;
 			}else{
-				response.setMessage(ItemConstants.DELETE_FAILURE);
-				return response;
+				logger.error("Error while deleting items");
+				return null;
 			}
 			
 		}catch(Exception e){
 			logger.error("Error while deleting items"+e);
 			response.setMessage(ItemConstants.DELETE_FAILURE +" " +e.getMessage());
-			return response;
+			throw e;
 		}
 		
 	}
