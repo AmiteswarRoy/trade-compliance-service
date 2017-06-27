@@ -14,28 +14,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.CollectionUtils;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dowjones.tradecompliance.search.aop.EnableInstrumentation;
-import com.dowjones.tradecompliance.search.domain.DataEntity;
 import com.dowjones.tradecompliance.search.domain.ErrorEntity;
+import com.dowjones.tradecompliance.search.domain.ErrorResponse;
 import com.dowjones.tradecompliance.search.domain.FileSearchableData;
-import com.dowjones.tradecompliance.search.domain.ItemResponse;
+import com.dowjones.tradecompliance.search.domain.MetaData;
 import com.dowjones.tradecompliance.search.domain.ResponseResult;
-import com.dowjones.tradecompliance.search.domain.TradeComplianceResponse;
-import com.dowjones.tradecompliance.search.domain.TradeItem;
 import com.dowjones.tradecompliance.search.domain.UploadRequest;
 import com.dowjones.tradecompliance.search.service.FileSearch;
-import com.dowjones.tradecompliance.search.util.BuildResponseUtil;
 import com.dowjones.tradecompliance.search.util.ItemConstants;
+import com.dowjones.tradecompliance.search.util.SearchResultException;
 
 /**
  * 
@@ -48,49 +44,53 @@ public class SearchController {
 	private static Logger logger = LogManager.getLogger(SearchController.class);
 
 	@Autowired
-	@Qualifier("FileSearchService")
+	@Qualifier("FileSearchImpl")
 	FileSearch fileSearch;
 
 	/**
 	 * @Desc - Hello end point to check connectivity
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	@GetMapping("/hello")
 	public ResponseEntity hello() {
 		logger.debug("In Hello endpoint");
-		return BuildResponseUtil.createSuccessfulResponse("Greetings from Search Service");
+		return new ResponseEntity("Greetings from Trade Compliance Service", HttpStatus.OK);
 	}
 
 	/**
 	 * @Description - To search the data based on search criteria
 	 * @param FileSearchableData
 	 *            json
-	 * @return ResponseResult json
+	 * @return ResponseEntity json
 	 */
 	@PostMapping("/search")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@EnableInstrumentation
-	public ResponseResult searchFiles(@Valid @RequestBody FileSearchableData searchableData,
-			Errors errors) {
-		ResponseResult results = new ResponseResult();
+	public ResponseEntity<?> searchFiles(@Valid @RequestBody FileSearchableData searchableData, Errors errors) {
+
 		// Return error response, if there are any errors in the input request
 		if (errors.hasErrors()) {
-			String errorDetails = errors.getAllErrors().stream().map(x -> x.getDefaultMessage()).collect(Collectors.joining(","));
-			results = buildErrorEntity("400", errorDetails, ItemConstants.BAD_REQUEST);
+			String errorDetails = errors.getAllErrors().stream().map(x -> x.getDefaultMessage())
+					.collect(Collectors.joining(","));
+			return new ResponseEntity<>(buildErrorResponse("400", errorDetails), HttpStatus.BAD_REQUEST);
 		}
 		logger.debug("Inside file search method");
+		ResponseResult results = new ResponseResult();
 		try {
 			results = fileSearch.searchFiles(searchableData);
-			logger.debug("File search result hits :" + results.getMeta().getHits());
-			return results;
-			
+			logger.debug("File search result hits :" + results.getMeta().getCount());
+			return new ResponseEntity<>(results, HttpStatus.OK);
+
+		} catch (SearchResultException e) {
+			logger.error("File search failed " + e);
+			return new ResponseEntity<>(buildErrorResponse(Integer.toString(e.getResponseCode()), e.getErrorMessage()),
+					HttpStatus.valueOf(e.getResponseCode()));
 		} catch (Exception ex) {
 			logger.error("File search failed " + ex);
-			results = buildErrorEntity("500", ex.getMessage(), ItemConstants.INTERNAL_SERVER_ERROR);
-			return results;
+			return new ResponseEntity<>(buildErrorResponse("500", ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		
-		
+
 	}
 
 	/**
@@ -99,11 +99,12 @@ public class SearchController {
 	 *            json
 	 * @return Json Response with creation status
 	 */
-	@SuppressWarnings("unchecked")
-	//@PostMapping("/createItem")
+	/*@SuppressWarnings("unchecked")
+	// @PostMapping("/createItem")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@EnableInstrumentation
-	public @ResponseBody ResponseEntity<ItemResponse> createFile(@Valid @RequestBody UploadRequest uploadRequest, Errors errors) {
+	public @ResponseBody ResponseEntity<ItemResponse> createFile(@Valid @RequestBody UploadRequest uploadRequest,
+			Errors errors) {
 		// Return error response, if there are any errors in the input request
 		if (errors.hasErrors()) {
 			return (ResponseEntity<ItemResponse>) BuildResponseUtil.createErrorResponse(
@@ -112,24 +113,26 @@ public class SearchController {
 		}
 		logger.debug("File Create Request");
 		try {
-			if(null != uploadRequest && !CollectionUtils.isEmpty(uploadRequest.getData())){
-				TradeItem file = uploadRequest.getData().get(0).getAttributes();
+			if (null != uploadRequest && !CollectionUtils.isEmpty(uploadRequest.getData())) {
+				TradeItem file = uploadRequest.getData().get(0);
 				ItemResponse response = fileSearch.createFile(file);
-				if(null != response){
+				if (null != response) {
 					return (ResponseEntity<ItemResponse>) BuildResponseUtil.createSuccessfulResponse(response);
-				}else{
-					return (ResponseEntity<ItemResponse>) BuildResponseUtil.createErrorResponse(ItemConstants.ITEM_CREATION_FAILURE, HttpStatus.INTERNAL_SERVER_ERROR);
+				} else {
+					return (ResponseEntity<ItemResponse>) BuildResponseUtil
+							.createErrorResponse(ItemConstants.ITEM_CREATION_FAILURE, HttpStatus.INTERNAL_SERVER_ERROR);
 				}
-			}else{
-				return (ResponseEntity<ItemResponse>) BuildResponseUtil.createErrorResponse(ItemConstants.ITEM_CREATION_FAILURE, HttpStatus.INTERNAL_SERVER_ERROR);
+			} else {
+				return (ResponseEntity<ItemResponse>) BuildResponseUtil
+						.createErrorResponse(ItemConstants.ITEM_CREATION_FAILURE, HttpStatus.INTERNAL_SERVER_ERROR);
 			}
-			
+
 		} catch (Exception ex) {
 			logger.error("Item creation failure " + ex);
-			return (ResponseEntity<ItemResponse>) BuildResponseUtil.createErrorResponse(ItemConstants.ITEM_CREATION_FAILURE +" due to "+ex,
-					HttpStatus.INTERNAL_SERVER_ERROR);
+			return (ResponseEntity<ItemResponse>) BuildResponseUtil.createErrorResponse(
+					ItemConstants.ITEM_CREATION_FAILURE + " due to " + ex, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-	}
+	}*/
 
 	/**
 	 * @Description - To create multiple trade items in elastic search
@@ -137,129 +140,94 @@ public class SearchController {
 	 *            of trade items in json format
 	 * @return Json Response with creation status
 	 */
-	@SuppressWarnings("unchecked")
 	@PostMapping("/upload")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@EnableInstrumentation
-	public @ResponseBody TradeComplianceResponse createBulkFile(@RequestBody @Valid UploadRequest uploadRequest, Errors errors) {
-		
+	public ResponseEntity<?> createBulkFile(@RequestBody @Valid UploadRequest uploadRequest, Errors errors) {
+
 		// Return error response, if there are any errors in the input request
 		if (errors.hasErrors()) {
-			ErrorEntity  errorEntity = new ErrorEntity();
-			errorEntity.setCode("400");
-			errorEntity.setStatus(errors.getAllErrors().stream().map(x -> x.getDefaultMessage()).collect(Collectors.joining(",")));
-			buildErrorResponse(errorEntity);
+			String errorDetails = errors.getAllErrors().stream().map(x -> x.getDefaultMessage())
+					.collect(Collectors.joining(","));
+			return new ResponseEntity<>(buildErrorResponse("400", errorDetails), HttpStatus.BAD_REQUEST);
 		}
 		logger.debug("Bulk Item Create Request");
-		System.out.println("uploadReq "+uploadRequest);
-		if (null != uploadRequest && null != uploadRequest.getData() && uploadRequest.getData().size() > 0 ) {
-			if(null != uploadRequest.getData().get(0)){
-				try {
-					ItemResponse response = fileSearch.createBulkFiles(uploadRequest.getData());
-					if(null != response){
-						return buildSuccessResponse(response);
-						
-					}else{
-						ErrorEntity errorEntity = new ErrorEntity();
-						errorEntity.setCode("500");
-						errorEntity.setStatus(ItemConstants.ITEM_CREATION_FAILURE);
-						return buildErrorResponse(errorEntity);
-						
-					}
-					
-				} catch (Exception ex) {
-					logger.error("Error while creating bulk items" + ex);
-					ErrorEntity  errorEntity = new ErrorEntity();
-					errorEntity.setCode("500");
-					errorEntity.setStatus(ItemConstants.ITEM_CREATION_FAILURE+" due to "+ex);
-					return buildErrorResponse(errorEntity);
+		if (null != uploadRequest && null != uploadRequest.getData() && uploadRequest.getData().size() > 0) {
+			try {
+				String totalItemsCreated = fileSearch.createBulkFiles(uploadRequest.getData());
+				if (null != totalItemsCreated) {
+					ResponseResult responseResult = new ResponseResult();
+					MetaData metaData = new MetaData();
+					metaData.setCount(totalItemsCreated);
+					responseResult.setMeta(metaData);
+					return new ResponseEntity<>(responseResult, HttpStatus.OK);
+
+				} else {
+					return new ResponseEntity<>(buildErrorResponse("500", ItemConstants.ITEM_CREATION_FAILURE),
+							HttpStatus.INTERNAL_SERVER_ERROR);
+
 				}
-			}else{
-				ErrorEntity  errorEntity = new ErrorEntity();
-				errorEntity.setCode("400");
-				errorEntity.setStatus(ItemConstants.NO_ITEMS);
-				return buildErrorResponse(errorEntity);
-				
+
+			} catch (Exception ex) {
+				logger.error("Error while creating bulk items" + ex);
+				return new ResponseEntity<>(buildErrorResponse("500", ex.getMessage()),
+						HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 
-		}else{
-			ErrorEntity  errorEntity = new ErrorEntity();
-			errorEntity.setCode("400");
-			errorEntity.setStatus(ItemConstants.NO_ITEMS);
-			return buildErrorResponse(errorEntity);
-		} 
+		} else {
+			return new ResponseEntity<>(buildErrorResponse("400", ItemConstants.NO_ITEMS), HttpStatus.BAD_REQUEST);
+		}
 
 	}
 
-	private TradeComplianceResponse buildErrorResponse(ErrorEntity errorEntity) {
-		TradeComplianceResponse uploadResponse = new TradeComplianceResponse();
-		uploadResponse.setError(errorEntity);
-		return uploadResponse;
-	}
-
-	private TradeComplianceResponse buildSuccessResponse(ItemResponse response) {
-		TradeComplianceResponse uploadResponse = new TradeComplianceResponse();
-		ErrorEntity errorEntity = new ErrorEntity();
-		errorEntity.setCode("200");
-		errorEntity.setStatus(response.getMessage());
-		uploadResponse.setError(errorEntity);
-		return uploadResponse;
-	} 
-	
 	/**
 	 * @Description - To delete all trade items in elastic search
 	 * @param
 	 * @return Json Response with creation status
 	 */
-	@SuppressWarnings("unchecked")
 	@DeleteMapping("/delete")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@EnableInstrumentation
-	public @ResponseBody TradeComplianceResponse deleteTradeItems() {
+	public ResponseEntity<?> deleteTradeItems() {
 		logger.debug("Delete All Items Request");
 		try {
-			ItemResponse response = fileSearch.deleteAllItems();
-			if(null != response){
-				return buildSuccessResponse(response);
-			}else{
-				ErrorEntity errorEntity = new ErrorEntity();
-				errorEntity.setCode("500");
-				errorEntity.setStatus(ItemConstants.DELETE_FAILURE);
-				return buildErrorResponse(errorEntity);
+			String itemsDeleted = fileSearch.deleteAllItems();
+			if (null != itemsDeleted) {
+				ResponseResult responseResult = new ResponseResult();
+				MetaData metaData = new MetaData();
+				metaData.setCount(itemsDeleted);
+				responseResult.setMeta(metaData);
+				return new ResponseEntity<>(responseResult, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<>(buildErrorResponse("500", ItemConstants.DELETE_FAILURE),
+						HttpStatus.INTERNAL_SERVER_ERROR);
 			}
-			
+
 		} catch (Exception ex) {
 			logger.error("Error while deleting trade items" + ex);
-			ErrorEntity errorEntity = new ErrorEntity();
-			errorEntity.setCode("500");
-			errorEntity.setStatus(ItemConstants.DELETE_FAILURE+" due to "+ex);
-			return buildErrorResponse(errorEntity);
-			
+			return new ResponseEntity<>(buildErrorResponse("500", ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+
 		}
 	}
-	
+
 	/**
 	 * @Description - To build the error scenario
 	 * @param
-	 * @return ResponseResult
+	 * @return ErrorResponse
 	 */
-	private ResponseResult buildErrorEntity(String status, String errorDetails, String title) {
+	private ErrorResponse buildErrorResponse(String status, String errorDetails) {
 
-		ResponseResult results = new ResponseResult();
-		
-		List<DataEntity> dataEntities = new ArrayList<DataEntity>();
+		ErrorResponse response = new ErrorResponse();
+
+		List<ErrorEntity> errorList = new ArrayList<ErrorEntity>();
 		ErrorEntity errorEntity = new ErrorEntity();
 		errorEntity.setStatus(status);
 		errorEntity.setDetail(errorDetails);
-		errorEntity.setTitle(title);
-		
-		DataEntity dataEntity = new DataEntity();
-		//dataEntity.setError(errorEntity);
-		
-		dataEntities.add(dataEntity);
-		results.setData(dataEntities);
-		
-		return results;
+
+		errorList.add(errorEntity);
+		response.setErrors(errorList);
+
+		return response;
 	}
 
 }

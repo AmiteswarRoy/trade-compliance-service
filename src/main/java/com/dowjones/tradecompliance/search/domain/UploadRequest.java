@@ -6,13 +6,13 @@ import javax.validation.Valid;
 
 public class UploadRequest {
 	@Valid
-	private List<TradeItemRequest> data;
+	private List<TradeItem> data;
 
-	public List<TradeItemRequest> getData() {
+	public List<TradeItem> getData() {
 		return data;
 	}
 
-	public void setData(List<TradeItemRequest> data) {
+	public void setData(List<TradeItem> data) {
 		this.data = data;
 	}
 

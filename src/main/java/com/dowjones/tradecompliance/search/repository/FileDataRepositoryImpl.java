@@ -13,16 +13,14 @@ import org.springframework.stereotype.Repository;
 import com.dowjones.tradecompliance.search.aop.EnableInstrumentation;
 import com.dowjones.tradecompliance.search.configuration.ElasticSearchConfig;
 import com.dowjones.tradecompliance.search.domain.DataEntity;
-import com.dowjones.tradecompliance.search.domain.ErrorEntity;
-import com.dowjones.tradecompliance.search.domain.FileData;
 import com.dowjones.tradecompliance.search.domain.FileSearchableData;
-import com.dowjones.tradecompliance.search.domain.ItemResponse;
 import com.dowjones.tradecompliance.search.domain.MetaData;
 import com.dowjones.tradecompliance.search.domain.ResponseResult;
 import com.dowjones.tradecompliance.search.domain.TradeItem;
 import com.dowjones.tradecompliance.search.repository.elasticsearch.EsFileQueryBuilder;
 import com.dowjones.tradecompliance.search.util.ConversionService;
 import com.dowjones.tradecompliance.search.util.ItemConstants;
+import com.dowjones.tradecompliance.search.util.SearchResultException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -88,12 +86,7 @@ public class FileDataRepositoryImpl implements FileDataRepository{
 		
 		if(!searchResult.isSucceeded()) {
 			logger.error("Search Failed from elastic search");
-			ErrorEntity errorEntity = new ErrorEntity();
-			
-			errorEntity.setStatus(Integer.toString(searchResult.getResponseCode()));
-			errorEntity.setDetail(searchResult.getErrorMessage());
-			
-			throw new IllegalStateException("The search failed : "+searchResult.getJsonString());
+			throw new SearchResultException(searchResult.getResponseCode(), searchResult.getErrorMessage());
 		}
 		
 		if(StringUtils.isEmpty(searchResult.getErrorMessage()) && StringUtils.isBlank(searchResult.getErrorMessage())) {
@@ -112,7 +105,7 @@ public class FileDataRepositoryImpl implements FileDataRepository{
 	 * @return ItemResponse
 	 * @exception java.lang.Exception
 	 */
-	@Override
+	/*@Override
 	@EnableInstrumentation
 	public ItemResponse createFile(TradeItem item) throws Exception {
 		ItemResponse response = new ItemResponse();
@@ -143,7 +136,7 @@ public class FileDataRepositoryImpl implements FileDataRepository{
 			logger.error("Item cannot be null.");
 			return null;
 		}
-	}
+	}*/
 	
 	/**
 	 * 
@@ -155,10 +148,10 @@ public class FileDataRepositoryImpl implements FileDataRepository{
 	 */
 	@Override
 	@EnableInstrumentation
-	public ItemResponse createBulkFiles(List<TradeItem> files) throws Exception {
-		ItemResponse response = new ItemResponse();
+	public String createBulkFiles(List<TradeItem> files) throws Exception {
+		//ItemResponse response = new ItemResponse();
 		if (files != null) {
-			List<Index> indexToInsert = new ArrayList<Index>();
+			List<Index> tradeItems = new ArrayList<Index>();
 			try{
 				for(TradeItem file:files){
 					String fileJson = gson.toJson(file);
@@ -168,17 +161,18 @@ public class FileDataRepositoryImpl implements FileDataRepository{
 							.type(config.getFileType())
 							.refresh(true)
 							.build();
-					indexToInsert.add(index);
+					tradeItems.add(index);
 				}
 				
-				logger.info(" No.of Docs - "+indexToInsert.size());
+				//logger.info(" No.of Docs - "+tradeItems.size());
 				Bulk bulk = new Bulk.Builder().defaultIndex(config.getIndex())
 							.defaultType(config.getFileType())
-							.addAction(indexToInsert).build();
+							.addAction(tradeItems).build();
 				JestResult result = client.execute(bulk);
 				if (result.isSucceeded()) {
-					response.setMessage(ItemConstants.ITEM_CREATION_SUCCESS);
-					return response;
+					logger.info("Total trade items created - "+tradeItems.size());
+					//response.setMessage(ItemConstants.ITEM_CREATION_SUCCESS);
+					return String.valueOf(tradeItems.size());
 				}else{
 					logger.error("Error while creating Bulk Trade Items");
 					return null;
@@ -190,7 +184,7 @@ public class FileDataRepositoryImpl implements FileDataRepository{
 			}
 			
 		} else {
-			logger.error("Item cannot be null.");
+			logger.error("Items cannot be null.");
 			return null;
 		}
 	}
@@ -203,8 +197,7 @@ public class FileDataRepositoryImpl implements FileDataRepository{
 	 */
 	@Override
 	@EnableInstrumentation
-	public ItemResponse deleteAllItems() throws Exception{
-		ItemResponse response = new ItemResponse();
+	public String deleteAllItems() throws Exception{
 		String query = gson.toJson(ItemConstants.DELETE_ALL_QUERY);
 		
 		try{
@@ -216,8 +209,7 @@ public class FileDataRepositoryImpl implements FileDataRepository{
 			logger.debug("Status - "+result.isSucceeded());
 			logger.info("Deleted count - "+result.getValue("deleted"));
 			if(result.isSucceeded()){
-				response.setMessage(result.getValue("deleted") + " "+ ItemConstants.DELETE_SUCCESS);
-				return response;
+				return result.getValue("deleted").toString();
 			}else{
 				logger.error("Error while deleting items");
 				return null;
@@ -225,7 +217,6 @@ public class FileDataRepositoryImpl implements FileDataRepository{
 			
 		}catch(Exception e){
 			logger.error("Error while deleting items"+e);
-			response.setMessage(ItemConstants.DELETE_FAILURE +" " +e.getMessage());
 			throw e;
 		}
 		
@@ -243,7 +234,7 @@ public class FileDataRepositoryImpl implements FileDataRepository{
 		MetaData meta = new MetaData();
 		List<DataEntity> data = new ArrayList<DataEntity>();
 		
-		meta.setHits(searchResult.getTotal());
+		meta.setCount(Integer.toString(searchResult.getTotal()));
 		List<SearchResult.Hit<TradeItem, Void>> hitsFromSearch = searchResult.getHits(TradeItem.class);
 		
 		for(SearchResult.Hit<TradeItem, Void> singleHitValue : hitsFromSearch) {

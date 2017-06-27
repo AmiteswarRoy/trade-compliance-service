@@ -5,13 +5,13 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @JsonSerialize
 public class MetaData {
 
-	private Integer hits;
+	private String count;
 	
-	public Integer getHits() {
-		return hits;
+	public String getCount() {
+		return count;
 	}
 	
-	public void setHits(Integer hits) {
-		this.hits = hits;
+	public void setCount(String count) {
+		this.count = count;
 	}
 }
