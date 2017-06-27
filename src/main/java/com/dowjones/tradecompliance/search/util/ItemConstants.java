@@ -23,6 +23,8 @@ public class ItemConstants {
 	public static final String GOODS_CODES_2 = "goods_codes_2";
 	public static final String GOODS_CODES_3 = "goods_codes_3";
 	
+	public static final String TYPE_GOODS = "Goods";
+	
 	public static final String[] SEARCHABLE_FIELDS = { ITEM_CODE, ITEM_DESCIPTION, MATCH_PHRASE, GOODS_CODES_1, GOODS_CODES_2, GOODS_CODES_3 };
 	
 	public static final String DELETE_ALL_QUERY = "{\"query\":{"
@@ -31,9 +33,11 @@ public class ItemConstants {
 												+ "}";
 	public static final Object DELETE_SUCCESS = "trade items successfully deleted from Index";
 	public static final String DELETE_FAILURE = "Failed to delete items from Index";
-	public static final Integer BAD_REQUEST = 400;
+	public static final String BAD_REQUEST = "Bad Request";
+	public static final String INTERNAL_SERVER_ERROR = "Internal Server Error";
 	
 	public static final String INVALID_INPUT = "Please provide valid input. Search parameters cannot be empty!";
+	public static final String TYPE_EMPTY = "Type cannot be empty.";
 	public static final String SERVER_DOWN = "The application is down. Please try after sometime";
 	public static final String NO_ITEMS = "There are no items in input request. Please provide items.";
 }

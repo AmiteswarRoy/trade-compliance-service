@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import com.dowjones.tradecompliance.search.configuration.ElasticSearchConfig;
 import com.dowjones.tradecompliance.search.domain.FileSearchableData;
-import com.dowjones.tradecompliance.search.domain.SearchCriteria;
 import com.dowjones.tradecompliance.search.util.ItemConstants;
 
 /**
@@ -26,7 +25,7 @@ public class EsFileQueryBuilder {
 
 	@Autowired
 	@Qualifier("FileSearchCriteria")
-	private List<CriteriaProcessor<SearchCriteria>> fileSearchCriteria;
+	private List<CriteriaProcessor<FileSearchableData>> fileSearchCriteria;
 
 	@Autowired
 	private ElasticSearchConfig config;
@@ -56,9 +55,9 @@ public class EsFileQueryBuilder {
 	private QueryComponents validateAndBuildFileQueryComponents(FileSearchableData searchableData,
 			List<String> invalidCriteria) throws Exception {
 		QueryComponents components = new QueryComponents();
-		for (CriteriaProcessor<SearchCriteria> processor : fileSearchCriteria) {
-			if (processor.hasCriteria(searchableData.getCriteria(), invalidCriteria)) {
-				processor.processCriteria(searchableData.getCriteria(), components);
+		for (CriteriaProcessor<FileSearchableData> processor : fileSearchCriteria) {
+			if (processor.hasCriteria(searchableData, invalidCriteria)) {
+				processor.processCriteria(searchableData, components);
 			}
 		}
 

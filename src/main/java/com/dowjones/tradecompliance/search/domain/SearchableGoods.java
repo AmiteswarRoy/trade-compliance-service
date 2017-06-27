@@ -8,7 +8,7 @@ import com.dowjones.tradecompliance.search.util.ItemConstants;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @JsonSerialize
-public class SearchCriteria {
+public class SearchableGoods {
 
 	@NotEmpty(message=ItemConstants.INVALID_INPUT)
 	private List<String> goods;
@@ -20,5 +20,5 @@ public class SearchCriteria {
 	public void setGoods(List<String> goods) {
 		this.goods = goods;
 	}
-
+	
 }

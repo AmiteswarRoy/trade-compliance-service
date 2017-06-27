@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface CriteriaProcessor<T> {
 	
-	boolean hasCriteria(T criteria, List<String> invalidCriteria);
-	void processCriteria(T criteria, QueryComponents components);
+	boolean hasCriteria(T data, List<String> invalidCriteria);
+	void processCriteria(T data, QueryComponents components);
 
 }

@@ -6,21 +6,21 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import com.dowjones.tradecompliance.search.aop.EnableInstrumentation;
 import com.dowjones.tradecompliance.search.configuration.ElasticSearchConfig;
+import com.dowjones.tradecompliance.search.domain.DataEntity;
+import com.dowjones.tradecompliance.search.domain.ErrorEntity;
 import com.dowjones.tradecompliance.search.domain.FileData;
-import com.dowjones.tradecompliance.search.domain.FileQueryResults;
 import com.dowjones.tradecompliance.search.domain.FileSearchableData;
 import com.dowjones.tradecompliance.search.domain.ItemResponse;
+import com.dowjones.tradecompliance.search.domain.MetaData;
+import com.dowjones.tradecompliance.search.domain.ResponseResult;
 import com.dowjones.tradecompliance.search.domain.TradeItem;
 import com.dowjones.tradecompliance.search.repository.elasticsearch.EsFileQueryBuilder;
-import com.dowjones.tradecompliance.search.repository.elasticsearch.QueryComponents;
 import com.dowjones.tradecompliance.search.util.ConversionService;
 import com.dowjones.tradecompliance.search.util.ItemConstants;
 import com.google.gson.Gson;
@@ -34,7 +34,6 @@ import io.searchbox.core.Bulk;
 import io.searchbox.core.DeleteByQuery;
 import io.searchbox.core.Index;
 import io.searchbox.core.Search;
-import io.searchbox.core.Search.Builder;
 import io.searchbox.core.SearchResult;
 
 /**
@@ -79,9 +78,9 @@ public class FileDataRepositoryImpl implements FileDataRepository{
 	 */
 	@Override
 	@EnableInstrumentation
-	public FileQueryResults searchFiles(FileSearchableData searchableData) throws Exception {
+	public ResponseResult searchFiles(FileSearchableData searchableData) throws Exception {
 		logger.debug("Inside search file method to connect to elastic search");
-		FileQueryResults results = new FileQueryResults();
+		ResponseResult results = new ResponseResult();
 		String queryString = fileQueryBuilder.buildFileSearchQuery(searchableData).toString();
 		
 		Search search = new Search.Builder(queryString).addIndex(config.getIndex()).addType(config.getFileType()).build();
@@ -89,6 +88,11 @@ public class FileDataRepositoryImpl implements FileDataRepository{
 		
 		if(!searchResult.isSucceeded()) {
 			logger.error("Search Failed from elastic search");
+			ErrorEntity errorEntity = new ErrorEntity();
+			
+			errorEntity.setStatus(Integer.toString(searchResult.getResponseCode()));
+			errorEntity.setDetail(searchResult.getErrorMessage());
+			
 			throw new IllegalStateException("The search failed : "+searchResult.getJsonString());
 		}
 		
@@ -234,18 +238,28 @@ public class FileDataRepositoryImpl implements FileDataRepository{
 	 * @return FileQueryResults
 	 * @exception java.lang.Exception
 	 */
-	private FileQueryResults populateSearchResults(SearchResult searchResult) {
-		FileQueryResults results = new FileQueryResults();
-		results.setHits(searchResult.getTotal());
+	private ResponseResult populateSearchResults(SearchResult searchResult) {
+		ResponseResult results = new ResponseResult();
+		MetaData meta = new MetaData();
+		List<DataEntity> data = new ArrayList<DataEntity>();
 		
-		List<FileData> files = new ArrayList<FileData>();
+		meta.setHits(searchResult.getTotal());
 		List<SearchResult.Hit<TradeItem, Void>> hitsFromSearch = searchResult.getHits(TradeItem.class);
 		
 		for(SearchResult.Hit<TradeItem, Void> singleHitValue : hitsFromSearch) {
-			files.add(ConversionService.convertTradeItemToFileData(singleHitValue.source));
+			DataEntity dataEntity = new DataEntity();
+			
+			dataEntity.setId(singleHitValue.id);
+			dataEntity.setType(ItemConstants.TYPE_GOODS);
+			dataEntity.setAttributes(ConversionService.convertTradeItemToFileData(singleHitValue.source));
+			dataEntity.setRelationships(null);
+			
+			data.add(dataEntity);
+			
 		}
 		
-		results.setFiles(files);
+		results.setData(data);
+		results.setMeta(meta);
 		
 		return results;
 		

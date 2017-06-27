@@ -1,5 +1,6 @@
 package com.dowjones.tradecompliance.search.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -8,10 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import com.dowjones.tradecompliance.search.domain.FileQueryResults;
 import com.dowjones.tradecompliance.search.domain.FileSearchableData;
 import com.dowjones.tradecompliance.search.domain.ItemResponse;
+import com.dowjones.tradecompliance.search.domain.ResponseResult;
 import com.dowjones.tradecompliance.search.domain.TradeItem;
+import com.dowjones.tradecompliance.search.domain.TradeItemRequest;
 import com.dowjones.tradecompliance.search.repository.FileDataRepository;
 import com.dowjones.tradecompliance.search.service.FileSearch;
 
@@ -37,9 +39,9 @@ public class FileSearchService implements FileSearch {
 	 * @exception java.lang.Exception
 	 * */
 	@Override
-	public FileQueryResults searchFiles(FileSearchableData searchableData) throws Exception {
+	public ResponseResult searchFiles(FileSearchableData searchableData) throws Exception {
 		logger.debug("Inside file search service method");
-		FileQueryResults results = repository.searchFiles(searchableData);
+		ResponseResult results = repository.searchFiles(searchableData);
 		return results;
 
 	}
@@ -65,9 +67,14 @@ public class FileSearchService implements FileSearch {
 	 * @exception java.lang.Exception
 	 * */
 	@Override
-	public ItemResponse createBulkFiles(List<TradeItem> files) throws Exception {
+	public ItemResponse createBulkFiles(List<TradeItemRequest> files) throws Exception {
 		logger.debug("Inside create bulk files service method");
-		ItemResponse response = repository.createBulkFiles(files);
+		List<TradeItem> items = new ArrayList<TradeItem>();
+		for(TradeItemRequest tradeItemRequest : files){
+			items.add(tradeItemRequest.getAttributes());
+		}
+		logger.debug("Total items to be inserted - "+items.size());
+		ItemResponse response = repository.createBulkFiles(items);
 		return response;
 
 	}

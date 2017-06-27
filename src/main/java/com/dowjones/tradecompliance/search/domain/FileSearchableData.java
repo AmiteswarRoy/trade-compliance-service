@@ -1,20 +1,22 @@
 package com.dowjones.tradecompliance.search.domain;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
+@JsonSerialize
 public class FileSearchableData {
 
 	@Valid
-	private SearchCriteria criteria;
+	private List<SearchDataCriteria> data;
 	
-	public SearchCriteria getCriteria() {
-		return criteria;
+	public List<SearchDataCriteria> getData() {
+		return data;
 	}
 	
-	public void setCriteria(SearchCriteria criteria) {
-		this.criteria = criteria;
+	public void setData(List<SearchDataCriteria> data) {
+		this.data = data;
 	}
 }

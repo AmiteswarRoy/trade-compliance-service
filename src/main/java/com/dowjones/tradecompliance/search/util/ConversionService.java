@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.dowjones.tradecompliance.search.domain.FileData;
+import com.dowjones.tradecompliance.search.domain.GoodsCodes;
 import com.dowjones.tradecompliance.search.domain.TradeItem;
 
 /**
@@ -19,6 +20,7 @@ public class ConversionService {
 	public static FileData convertTradeItemToFileData(TradeItem tradeItem) {
 		logger.debug("Inside Conversion Method");
 		FileData fileData = new FileData();
+		GoodsCodes goodsCodes = new GoodsCodes();
 
 		if(StringUtils.isNotEmpty(tradeItem.getItem_code()))
 			fileData.setItem_code(tradeItem.getItem_code());
@@ -36,19 +38,21 @@ public class ConversionService {
 			fileData.setMatch_phrase(null);
 		
 		if(StringUtils.isNotEmpty(tradeItem.getGoods_codes_1()))
-			fileData.setGoods_codes_1(tradeItem.getGoods_codes_1());
+			goodsCodes.setGoods_codes_1(tradeItem.getGoods_codes_1());
 		else
-			fileData.setGoods_codes_1(null);
+			goodsCodes.setGoods_codes_1(null);
 		
 		if(StringUtils.isNotEmpty(tradeItem.getGoods_codes_2()))
-			fileData.setGoods_codes_2(tradeItem.getGoods_codes_2());
+			goodsCodes.setGoods_codes_2(tradeItem.getGoods_codes_2());
 		else
-			fileData.setGoods_codes_2(null);
+			goodsCodes.setGoods_codes_2(null);
 		
 		if(StringUtils.isNotEmpty(tradeItem.getGoods_codes_3()))
-			fileData.setGoods_codes_3(tradeItem.getGoods_codes_3());
+			goodsCodes.setGoods_codes_3(tradeItem.getGoods_codes_3());
 		else
-			fileData.setGoods_codes_3(null);
+			goodsCodes.setGoods_codes_3(null);
+		
+		fileData.setCodes(goodsCodes);
 		
 		return fileData;
 	}

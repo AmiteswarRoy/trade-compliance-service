@@ -10,7 +10,8 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import com.dowjones.tradecompliance.search.domain.SearchCriteria;
+import com.dowjones.tradecompliance.search.domain.FileSearchableData;
+import com.dowjones.tradecompliance.search.domain.SearchDataCriteria;
 import com.dowjones.tradecompliance.search.repository.elasticsearch.CriteriaProcessor;
 import com.dowjones.tradecompliance.search.repository.elasticsearch.QueryComponents;
 import com.dowjones.tradecompliance.search.util.ItemConstants;
@@ -23,39 +24,47 @@ import com.dowjones.tradecompliance.search.util.ItemConstants;
  * */
 @Component
 @Qualifier("FileSearchCriteria")
-public class GoodsProcessor implements CriteriaProcessor<SearchCriteria> {
+public class GoodsProcessor implements CriteriaProcessor<FileSearchableData> {
 	
 	/**
 	 * @Description Validate criteria against null and blank
-	 * @param SearchCriteris, List<String>
+	 * @param FileSearchableData, List<String>
 	 * @return boolean
 	 * */
 	@Override
-	public boolean hasCriteria(SearchCriteria criteria, List<String> invalidCriteria) {
-		if(criteria.getGoods()!=null && criteria.getGoods().size()>0) {
-			for(String good : criteria.getGoods()) {
-				if(StringUtils.isEmpty(good) || StringUtils.isBlank(good)) {
-					invalidCriteria.add("Cannot have an empty good code");
-					return false;
+	public boolean hasCriteria(FileSearchableData data, List<String> invalidCriteria) {
+		
+		for(SearchDataCriteria criteria : data.getData()) {
+			List<String> goods = criteria.getAttributes().getFilters().getGoods();
+
+			if(goods!=null && goods.size()>0) {
+				for(String good: goods) {
+					if(StringUtils.isEmpty(good) || StringUtils.isBlank(good)) {
+						invalidCriteria.add("Cannot have an empty good.");
+						return false;
+					}
 				}
 			}
 		}
-		
 		return true;
 	}
 
 	/**
 	 * @Description Construct the multi match query for list of goods
-	 * @param SearchCriteris, QueryComponents
+	 * @param FileSearchableData, QueryComponents
 	 * @return 
 	 * */
 	@Override
-	public void processCriteria(SearchCriteria criteria, QueryComponents components) {
+	public void processCriteria(FileSearchableData data, QueryComponents components) {
 		BoolQueryBuilder boolQuery = new BoolQueryBuilder();
 		List<MultiMatchQueryBuilder> multiQuery = new ArrayList<MultiMatchQueryBuilder>();
 		
-		for(String good: criteria.getGoods()) {
-			multiQuery.add(QueryBuilders.multiMatchQuery(good, ItemConstants.SEARCHABLE_FIELDS).fuzziness("AUTO"));
+		for(SearchDataCriteria criteria : data.getData()) {
+			List<String> goods = criteria.getAttributes().getFilters().getGoods();
+			
+			for(String good: goods) {
+				multiQuery.add(QueryBuilders.multiMatchQuery(good, ItemConstants.SEARCHABLE_FIELDS).fuzziness("AUTO"));
+			}
 		}
 		
 		for(MultiMatchQueryBuilder multiMatchQuery : multiQuery) {
